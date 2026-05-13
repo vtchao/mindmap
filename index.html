@@ -253,6 +253,36 @@ function expandAll() {
   render();
 }
 
+function exportCanvas() {
+  const svgEl = document.getElementById('map-svg');
+  const serializer = new XMLSerializer();
+  
+  // 複製一份 SVG 避免影響當前畫面
+  const svgClone = svgEl.cloneNode(true);
+  
+  // 確保克隆的 SVG 包含必要的 CSS 樣式
+  const style = document.createElement('style');
+  style.textContent = `
+    text { font-family: "Noto Sans TC", sans-serif; }
+    rect { stroke-linejoin: round; }
+  `;
+  svgClone.insertBefore(style, svgClone.firstChild);
+
+  const source = serializer.serializeToString(svgClone);
+  const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `mindmap-${document.getElementById('map-title').value || 'export'}.svg`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  // 提醒使用者匯出成功
+  console.log("Canvas exported successfully as SVG.");
+}
+
 const svg=document.getElementById('map-svg');
 let vx=-200,vy=-300,vw=1100,vh=750,panMode=false,panStart=null,editState=null,svgDragNode=null,svgDragOff={x:0,y:0};
 function applyVB(){svg.setAttribute('viewBox',vx+' '+vy+' '+vw+' '+vh);}
@@ -318,7 +348,10 @@ function drawSubtree(node,col,depth){
   nodes+='<g data-nodeid="'+node.id+'" style="cursor:move" onclick="selectNode('+node.id+',event)" ondblclick="startSVGEdit(event,'+node.id+','+x+','+y+','+w+','+h+',\''+en+'\')">';
   nodes+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rxv+'" fill="'+(isSel?hexBg(col,.18):bg)+'" stroke="'+col+'" stroke-width="'+(isSel?2.2:sw)+'"/>';
   nodes+='<text x="'+(x+w/2)+'" y="'+(y+h/2)+'" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans TC,sans-serif" font-size="'+fs+'" font-weight="'+(isSel?'700':fw)+'" fill="'+tc+'" style="pointer-events:none">'+node.name+'</text>';
-  if(hasNote)nodes+='<circle cx="'+(x+w-7)+'" cy="'+(y+7)+'" r="4" fill="'+col+'" opacity=".75" style="pointer-events:none"/>';
+  if(hasNote){
+  nodes+='<circle cx="'+(x+w/2)+'" cy="'+y+'" r="5" fill="'+col+'" opacity=".85" style="pointer-events:none"/>';
+}
+
   nodes+='</g>';
   node.children.forEach(function(child){
     if(!node.open)return;
