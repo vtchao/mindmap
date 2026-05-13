@@ -3,197 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IPAS 淨零碳規劃管理師｜考點心智圖</title>
+<title>IPAS 心智圖筆記修正版</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap');
-
-:root{
-  --bg:#fff; --surface:#f6f8fa; --surface2:#eef1f4;
-  --border:#d0d7de; --border2:#e2e7ec;
-  --text:#1a1f25; --text2:#57606a; --text3:#a8b1ba;
-  --accent:#0969da;
-}
+:root{--bg:#fff;--surface:#f6f8fa;--surface2:#eef1f4;--border:#d0d7de;--border2:#e2e7ec;--text:#1a1f25;--text2:#57606a;--text3:#a8b1ba;--accent:#0969da;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);
-  height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-
-/* Header */
-header{display:flex;align-items:center;justify-content:space-between;
-  padding:9px 18px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+header{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;}
 .logo{display:flex;align-items:center;gap:10px;}
-.logo-badge{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
-  background:var(--accent);color:#fff;padding:3px 8px;border-radius:5px;}
-.logo-text{font-size:13px;font-weight:500;}
+.logo-badge{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;background:var(--accent);color:#fff;padding:3px 8px;border-radius:5px;}
+.logo-title-input{font-size:14px;font-weight:500;border:none;outline:none;background:transparent;color:var(--text);width:260px;}
+.logo-title-input::placeholder{color:var(--text3);}
 .logo-sub{font-size:11px;color:var(--text3);}
 .hdr-actions{display:flex;gap:7px;}
-.hdr-actions button{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:5px 12px;
-  border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;}
-.hdr-actions button:hover{background:var(--surface);}
-.hdr-actions button.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
-.hdr-actions button.primary:hover{opacity:.88;}
-
-/* Layout */
+.hdr-btn{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;}
+.hdr-btn:hover{background:var(--surface);}
+.hdr-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
 .layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 48px);}
-
-/* Sidebar */
-.sidebar{width:290px;flex-shrink:0;background:var(--surface);
-  border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-.sb-head{padding:11px 14px 7px;font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.08em;color:var(--text3);border-bottom:1px solid var(--border2);}
-.sb-tip{padding:5px 13px;font-size:10px;color:var(--text3);
-  border-bottom:1px solid var(--border2);background:var(--surface2);}
-.sb-scroll{flex:1;overflow-y:auto;padding:8px 9px;}
+.sidebar{width:290px;min-width:180px;max-width:600px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.sb-head{padding:11px 14px 7px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);border-bottom:1px solid var(--border2);}
+.sb-tip{padding:5px 13px;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border2);background:var(--surface2);line-height:1.7;}
+.sb-scroll{flex:1;overflow-y:auto;padding:6px 8px;}
 .sb-scroll::-webkit-scrollbar{width:4px;}
 .sb-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-
-/* Tree items in sidebar */
-.tree-item{margin-bottom:4px;}
-.tree-row{display:flex;align-items:center;gap:5px;padding:5px 7px;
-  border-radius:6px;cursor:pointer;user-select:none;transition:background .1s;}
+.tree-item{border-radius:7px;margin-bottom:2px;position:relative;}
+.tree-row{display:flex;align-items:flex-start;gap:4px;padding:5px 6px;border-radius:7px;user-select:none;transition:background .1s;}
 .tree-row:hover{background:var(--surface2);}
-.tree-indent{flex-shrink:0;}
-.tree-toggle{width:14px;height:14px;flex-shrink:0;display:flex;align-items:center;
-  justify-content:center;font-size:9px;color:var(--text3);border-radius:3px;}
-.tree-toggle:hover{background:var(--border2);}
+.drag-handle{flex-shrink:0;width:18px;height:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:grab;opacity:0;transition:opacity .15s;border-radius:4px;}
+.drag-handle:active{cursor:grabbing;}
+.drag-handle span{display:block;width:10px;height:1.5px;background:var(--text3);border-radius:1px;}
+.tree-row:hover .drag-handle{opacity:1;}
+.drag-handle:hover{background:var(--border2);}
+.drag-handle{margin-top:3px;}
+.tree-toggle{margin-top:3px;}
+.tree-dot{margin-top:5px;}
+.sb-resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px; /* 增加感應寬度 */
+  cursor: col-resize;
+  z-index: 100;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.sb-resizer:hover, .sb-resizer.resizing {
+  background: var(--accent); /* 拖曳或懸停時顯示藍色 */
+  opacity: 0.5;
+}
+.tree-toggle{width:14px;height:14px;flex-shrink:0;font-size:9px;color:var(--text3);display:flex;align-items:center;justify-content:center;border-radius:3px;cursor:pointer;}
 .tree-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1.5px solid currentColor;}
-.tree-label{flex:1;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.tree-label.editable{cursor:text;}
-.tree-label-input{font-family:'Noto Sans TC',sans-serif;font-size:12px;flex:1;
-  border:1px solid var(--accent);border-radius:4px;padding:1px 5px;outline:none;
-  background:var(--bg);color:var(--text);display:none;}
-.tree-actions{display:flex;gap:2px;opacity:0;transition:opacity .1s;}
+.label-wrap{flex:1;min-width:0;}
+.tree-label{display:block;font-size:12px;white-space:normal;word-break:break-all;line-height:1.45;cursor:pointer;}
+.tree-label-input{font-family:'Noto Sans TC',sans-serif;font-size:12px;width:100%;border:1px solid var(--accent);border-radius:4px;padding:1px 5px;outline:none;background:var(--bg);color:var(--text);display:none;}
+.tree-actions{display:flex;gap:2px;opacity:0;transition:opacity .1s;flex-shrink:0;}
 .tree-row:hover .tree-actions{opacity:1;}
-.tree-btn{background:none;border:none;cursor:pointer;color:var(--text3);
-  font-size:12px;padding:1px 4px;border-radius:3px;line-height:1;}
+.tree-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:1px 4px;border-radius:3px;line-height:1;}
 .tree-btn:hover{background:var(--border2);color:var(--text);}
 .tree-btn.del:hover{color:#c0392b;}
-.tree-note-row{padding:2px 7px 4px;margin-left:30px;}
-.tree-note-input{font-family:'Noto Sans TC',sans-serif;font-size:11px;width:100%;
-  border:none;border-bottom:1px dashed var(--border);background:transparent;
-  color:var(--text2);outline:none;padding:2px 0;}
-.tree-note-input::placeholder{color:var(--text3);}
-.tree-children{margin-left:16px;}
-.tree-add-row{display:flex;gap:4px;margin:2px 0 4px 30px;}
-.tree-add-row input{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:11px;
-  padding:3px 7px;border:1px solid var(--border);border-radius:5px;
-  background:var(--bg);color:var(--text);outline:none;}
+.tree-children{margin-left:14px;}
+.tree-add-row{display:flex;gap:4px;margin:2px 0 4px 28px;}
+.tree-add-row input{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:11px;padding:3px 7px;border:1px solid var(--border);border-radius:5px;background:var(--bg);color:var(--text);outline:none;}
 .tree-add-row input:focus{border-color:var(--accent);}
-.tree-add-row input::placeholder{color:var(--text3);}
-.tree-add-row button{font-size:11px;padding:3px 8px;background:var(--surface2);
-  border:1px solid var(--border);border-radius:5px;color:var(--text2);cursor:pointer;}
-.tree-add-row button:hover{background:var(--surface);}
-
+.tree-add-row button{font-size:11px;padding:3px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text2);cursor:pointer;}
+.drop-indicator{height:2px;border-radius:2px;margin:0 4px;background:var(--accent);box-shadow:0 0 6px rgba(9,105,218,.5);display:none;}
+.tree-item.drop-target > .tree-row{background:rgba(9,105,218,.07);outline:1.5px dashed var(--accent);outline-offset:-1px;}
+.tree-item.is-dragging{opacity:.3;}
+.tree-item.selected > .tree-row{background:rgba(9,105,218,.10);border-radius:7px;}
+.tree-item.selected > .tree-row .tree-label{color:var(--accent);font-weight:500;}
+#drag-ghost{position:fixed;pointer-events:none;z-index:9999;background:var(--bg);border:1.5px solid var(--accent);border-radius:7px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--text);box-shadow:0 6px 20px rgba(9,105,218,.2);white-space:nowrap;display:none;font-family:'Noto Sans TC',sans-serif;transform:translate(-8px,-50%);}
+.sb-toolbar{display:flex;gap:4px;padding:5px 8px;border-bottom:1px solid var(--border2);background:var(--bg);}
+.sb-tool-btn{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:11px;padding:4px 6px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;transition:all .12s;}
+.sb-tool-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border);}
 .sb-add{padding:8px 9px;border-top:1px solid var(--border2);display:flex;gap:6px;}
-.sb-add input{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:6px 9px;
-  border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);outline:none;}
+.sb-add input{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:6px 9px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);outline:none;}
 .sb-add input:focus{border-color:var(--accent);}
-.sb-add input::placeholder{color:var(--text3);}
-.sb-add button{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:6px 11px;
-  background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:500;}
-.sb-add button:hover{opacity:.88;}
-
-/* Canvas */
+.sb-add button{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:6px 11px;background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:500;}
 .canvas-wrap{flex:1;overflow:hidden;position:relative;background:#fff;}
-.canvas-wrap::before{content:'';position:absolute;inset:0;
-  background-image:radial-gradient(circle,#cdd2d8 1px,transparent 1px);
-  background-size:22px 22px;pointer-events:none;opacity:.5;}
+.canvas-wrap::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,#cdd2d8 1px,transparent 1px);background-size:22px 22px;pointer-events:none;opacity:.5;}
 #map-svg{width:100%;height:100%;display:block;position:relative;z-index:1;cursor:grab;}
 #map-svg:active{cursor:grabbing;}
-
-/* SVG edit overlay */
 #svg-edit-overlay{position:absolute;z-index:20;display:none;}
-#svg-edit-input{font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:500;
-  border:1.5px solid var(--accent);border-radius:6px;padding:3px 8px;outline:none;
-  background:#fff;color:#333;box-shadow:0 2px 8px rgba(9,105,218,.15);width:100%;height:100%;}
-
-/* Note panel (right drawer) */
-#note-panel{position:absolute;right:0;top:0;bottom:0;width:280px;
-  background:var(--bg);border-left:1px solid var(--border);
-  display:none;flex-direction:column;z-index:15;box-shadow:-4px 0 16px rgba(0,0,0,.06);}
+#svg-edit-input{font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:500;border:1.5px solid var(--accent);border-radius:6px;padding:3px 8px;outline:none;background:#fff;color:#333;box-shadow:0 2px 8px rgba(9,105,218,.15);width:100%;height:100%;}
+#note-panel{position:absolute;right:0;top:0;bottom:0;width:275px;background:var(--bg);border-left:1px solid var(--border);display:none;flex-direction:column;z-index:15;box-shadow:-4px 0 16px rgba(0,0,0,.06);}
 #note-panel.open{display:flex;}
-.np-head{display:flex;align-items:center;justify-content:space-between;
-  padding:12px 14px;border-bottom:1px solid var(--border2);}
+.np-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border2);}
 .np-title{font-size:13px;font-weight:500;}
 .np-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;line-height:1;}
-.np-close:hover{color:var(--text);}
-.np-node-name{padding:8px 14px;font-size:11px;color:var(--text2);
-  border-bottom:1px solid var(--border2);background:var(--surface);}
+.np-node-name{padding:7px 14px;font-size:11px;color:var(--text2);border-bottom:1px solid var(--border2);background:var(--surface);}
 .np-body{flex:1;display:flex;flex-direction:column;padding:12px 14px;gap:8px;}
-.np-label{font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.07em;color:var(--text3);}
-#note-textarea{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:12px;
-  border:1px solid var(--border);border-radius:6px;padding:8px 10px;
-  resize:none;outline:none;color:var(--text);line-height:1.7;}
+.np-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);}
+#note-textarea{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:12px;border:1px solid var(--border);border-radius:6px;padding:8px 10px;resize:none;outline:none;color:var(--text);line-height:1.7;}
 #note-textarea:focus{border-color:var(--accent);}
-#note-textarea::placeholder{color:var(--text3);}
-.np-save{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:7px;
-  background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:500;}
-.np-save:hover{opacity:.88;}
-
-/* zoom / stats */
-.zoom-btns{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
-  display:flex;gap:2px;z-index:5;}
-.zoom-btns button{font-size:16px;width:32px;height:32px;background:var(--bg);
-  border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;}
+.np-save{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:7px;background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:500;}
+.zoom-btns{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:2px;z-index:5;}
+.zoom-btns button{font-size:16px;width:32px;height:32px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .zoom-btns button.lbl{font-size:11px;width:auto;padding:0 10px;}
 .zoom-btns button:hover{background:var(--surface);}
-.stats-bar{position:absolute;bottom:14px;right:16px;display:flex;gap:12px;
-  background:var(--bg);border:1px solid var(--border);border-radius:16px;
-  padding:5px 13px;font-size:10px;font-family:'Space Mono',monospace;color:var(--text2);z-index:5;}
+.stats-bar{position:absolute;bottom:14px;right:16px;display:flex;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:5px 13px;font-size:10px;font-family:'Space Mono',monospace;color:var(--text2);z-index:5;}
 .stats-bar b{color:var(--text);}
+.empty-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none;z-index:2;}
+.empty-hint-icon{font-size:36px;opacity:.18;}
+.empty-hint-text{font-size:13px;color:var(--text3);}
 </style>
 </head>
 <body>
-
+<div id="drag-ghost"></div>
 <header>
   <div class="logo">
-    <span class="logo-badge">IPAS</span>
+    <span class="logo-badge">MAP</span>
     <div>
-      <div class="logo-text">淨零碳規劃管理師</div>
-      <div class="logo-sub">初級考試心智圖</div>
+      <input class="logo-title-input" id="map-title" placeholder="輸入心智圖標題…" value=""/>
+      <div class="logo-sub">心智圖筆記工具 (修復版)</div>
     </div>
   </div>
   <div class="hdr-actions">
-    <button onclick="exportJSON()">匯出 JSON</button>
-    <button onclick="importJSON()">匯入 JSON</button>
-    <button class="primary" onclick="resetView()">重置視圖</button>
+    <button class="hdr-btn" onclick="autoLayout()">⟳ 自動排列</button>
+    <button class="hdr-btn" onclick="exportCanvas()">🖼 匯出畫布</button>
+    <button class="hdr-btn" onclick="exportJSON()">匯出 JSON</button>
+    <button class="hdr-btn" onclick="importJSON()">匯入 JSON</button>
+    <button class="hdr-btn primary" onclick="resetView()">重置視圖</button>
   </div>
 </header>
-
 <div class="layout">
-  <!-- Sidebar -->
   <div class="sidebar">
+    <div class="sb-resizer" id="sb-resizer"></div>
     <div class="sb-head">分支與考點</div>
-    <div class="sb-tip">✏️ 雙擊名稱修改 ｜ 📝 點「備」開啟備註 ｜ ➕ 可無限新增子層</div>
+    <div class="sb-tip">☰ 拖曳把手調換順序<br>✏️ 雙擊名稱修改 ｜ 📝 備註 ｜ ＋ 新增子層</div>
+    <div class="sb-toolbar">
+      <button class="sb-tool-btn" onclick="collapseAll()" title="折疊所有子節點">⊖ 全部折疊</button>
+      <button class="sb-tool-btn" onclick="expandAll()" title="展開所有子節點">⊕ 全部展開</button>
+    </div>
     <div class="sb-scroll" id="tree-list"></div>
     <div class="sb-add">
       <input type="text" id="new-root-input" placeholder="新增主分支…"/>
       <button onclick="addRootNode()">+ 新增</button>
     </div>
   </div>
-
-  <!-- Canvas -->
   <div class="canvas-wrap" id="canvas-wrap">
-    <svg id="map-svg" xmlns="http://www.w3.org/2000/svg">
-      <g id="map-root"></g>
-    </svg>
+    <svg id="map-svg" xmlns="http://www.w3.org/2000/svg"><g id="map-root"></g></svg>
     <div id="svg-edit-overlay"><input id="svg-edit-input" type="text"/></div>
-
-    <!-- Note panel -->
     <div id="note-panel">
-      <div class="np-head">
-        <span class="np-title">📝 備註</span>
-        <button class="np-close" onclick="closeNote()">×</button>
-      </div>
+      <div class="np-head"><span class="np-title">📝 備註</span><button class="np-close" onclick="closeNote()">×</button></div>
       <div class="np-node-name" id="np-node-name"></div>
       <div class="np-body">
-        <div class="np-label">考試筆記 / 重點說明</div>
+        <div class="np-label">筆記 / 重點說明</div>
         <textarea id="note-textarea" placeholder="在此輸入備註、解釋、記憶技巧…"></textarea>
         <button class="np-save" onclick="saveNote()">儲存備註</button>
       </div>
     </div>
-
+    <div class="empty-hint" id="empty-hint">
+      <div class="empty-hint-icon">🗺</div>
+      <div class="empty-hint-text">在左側新增第一個主分支，開始建立心智圖</div>
+    </div>
     <div class="zoom-btns">
       <button onclick="zoom(0.82)">−</button>
       <button class="lbl" onclick="resetView()">重置</button>
@@ -202,396 +166,279 @@ header{display:flex;align-items:center;justify-content:space-between;
     <div class="stats-bar" id="stats-bar"></div>
   </div>
 </div>
-
 <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
-
 <script>
-/* ─── Palette ─── */
 const COLORS=['#0969da','#6639ba','#c0392b','#0a7a5f','#b45309','#9b2d6e','#2d7a3a','#0f5a7a'];
-function hexBg(h,a=.07){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return `rgba(${r},${g},${b},${a})`;}
+function hexBg(h,a){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+(a||.07)+')';}
 
-/* ─── Data model ───
-  Node: { id, name, note, open, showAdd, children:[] }
-*/
-let _id=100;
-function mkNode(name,children=[]){return {id:_id++,name,note:'',open:true,showAdd:false,children};}
+let _id=1;
+let selectedId=null;
+let roots=[];
 
-let roots=[
-  mkNode('碳排放基礎',[
-    mkNode('碳中和定義'),mkNode('GHG範疇一/二/三',[mkNode('範疇一：直接排放'),mkNode('範疇二：能源間接'),mkNode('範疇三：其他間接')]),
-    mkNode('淨零vs碳中和差異'),mkNode('全球暖化潛勢GWP'),mkNode('六大溫室氣體'),
-  ]),
-  mkNode('淨零路徑',[mkNode('再生能源'),mkNode('碳捕捉技術'),mkNode('能源效率提升'),mkNode('氫能應用'),mkNode('自然碳匯'),mkNode('電氣化策略')]),
-  mkNode('碳盤查',[mkNode('ISO 14064'),mkNode('盤查邊界設定'),mkNode('ISO 14067'),mkNode('排放係數選用'),mkNode('數據品質管理'),mkNode('第三方查證')]),
-  mkNode('碳交易與碳市場',[mkNode('碳權定義'),mkNode('自願性碳市場VCM'),mkNode('強制性碳市場ETS'),mkNode('碳抵換機制')]),
-  mkNode('法規與國際協議',[mkNode('巴黎協定'),mkNode('IPCC報告'),mkNode('台灣氣候變遷因應法'),mkNode('2050淨零排放路徑')]),
-  mkNode('企業減碳策略',[mkNode('SBTi科學基礎減量'),mkNode('ESG揭露要求'),mkNode('RE100倡議'),mkNode('供應鏈減碳')]),
-  mkNode('碳足跡與LCA',[mkNode('LCA概念'),mkNode('產品碳足跡計算'),mkNode('Scope3排放熱點'),mkNode('ISO 14067')]),
-  mkNode('碳中和宣告',[mkNode('PAS 2060標準'),mkNode('碳抵換選購原則'),mkNode('避免漂綠')]),
-];
+function mkNode(name,children){return {id:_id++,name:name||'',note:'',open:true,showAdd:false,children:children||[],x:0,y:0};}
 
-/* ─── Find node by id ─── */
-function findNode(id,nodes=roots,parent=null,idx=0){
-  for(let i=0;i<nodes.length;i++){
-    if(nodes[i].id===id) return {node:nodes[i],siblings:nodes,idx:i,parent};
-    const f=findNode(id,nodes[i].children,nodes[i],i);
-    if(f) return f;
+function findNode(id,nodes,parent){
+  nodes=nodes||roots;
+  for(var i=0;i<nodes.length;i++){
+    if(nodes[i].id===id)return {node:nodes[i],siblings:nodes,idx:i,parent:parent||null};
+    var f=findNode(id,nodes[i].children,nodes[i]);
+    if(f)return f;
   }
   return null;
 }
 
-/* ─── Pan / Zoom ─── */
+// --- 側邊欄拉寬邏輯 ---
+const sidebar = document.querySelector('.sidebar');
+const resizer = document.getElementById('sb-resizer');
+let isResizing = false;
+
+resizer.addEventListener('mousedown', function(e) {
+  isResizing = true;
+  resizer.classList.add('resizing');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none'; // 防止拖曳時選取到文字
+});
+
+window.addEventListener('mousemove', function(e) {
+  if (!isResizing) return;
+
+  // 取得滑鼠當前位置作為側邊欄寬度
+  let newWidth = e.clientX;
+
+  // 設定最小與最大寬度限制
+  if (newWidth < 180) newWidth = 180;
+  if (newWidth > 600) newWidth = 600;
+
+  sidebar.style.width = newWidth + 'px';
+});
+
+window.addEventListener('mouseup', function() {
+  if (isResizing) {
+    isResizing = false;
+    resizer.classList.remove('resizing');
+    document.body.style.cursor = 'default';
+    document.body.style.userSelect = 'auto';
+  }
+});
+
+function toggleNode(id) {
+  function findAndToggle(nodes) {
+    for (let node of nodes) {
+      if (node.id === id) {
+        node.open = !node.open;
+        return true;
+      }
+      if (node.children && findAndToggle(node.children)) return true;
+    }
+    return false;
+  }
+  findAndToggle(roots);
+  autoLayout(); // 狀態改變後重新排列
+  render(); 
+}
+
+// 2. 全部摺疊
+function collapseAll() {
+  function tr(ns){ ns.forEach(n=>{ n.open=false; if(n.children) tr(n.children); }); }
+  tr(roots);
+  autoLayout();
+  render();
+}
+
+// 3. 全部展開
+function expandAll() {
+  function tr(ns){ ns.forEach(n=>{ n.open=true; if(n.children) tr(n.children); }); }
+  tr(roots);
+  autoLayout();
+  render();
+}
+
 const svg=document.getElementById('map-svg');
-let vx=-80,vy=-40,vw=1100,vh=740;
-let panning=false,panStart=null,editState=null;
-function applyVB(){svg.setAttribute('viewBox',`${vx} ${vy} ${vw} ${vh}`);}
-svg.addEventListener('mousedown',e=>{
-  if(e.button!==0||e.target.closest('[data-btn]')||editState) return;
-  panning=true; panStart={x:e.clientX,y:e.clientY,vx,vy}; e.preventDefault();
+let vx=-200,vy=-300,vw=1100,vh=750,panMode=false,panStart=null,editState=null,svgDragNode=null,svgDragOff={x:0,y:0};
+function applyVB(){svg.setAttribute('viewBox',vx+' '+vy+' '+vw+' '+vh);}
+function svgPoint(e){var r=svg.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*vw+vx,y:(e.clientY-r.top)/r.height*vh+vy};}
+svg.addEventListener('mousedown',function(e){
+  if(e.button!==0||editState)return;
+  var el=e.target.closest('[data-nodeid]');
+  if(el){var id=parseInt(el.dataset.nodeid);var f=findNode(id);if(!f)return;var pt=svgPoint(e);svgDragNode={id:id,node:f.node};svgDragOff={x:pt.x-f.node.x,y:pt.y-f.node.y};e.preventDefault();return;}
+  panMode=true;panStart={x:e.clientX,y:e.clientY,vx:vx,vy:vy};e.preventDefault();
 });
-window.addEventListener('mousemove',e=>{
-  if(!panning) return;
-  const rect=svg.getBoundingClientRect();
-  vx=panStart.vx-(e.clientX-panStart.x)*vw/rect.width;
-  vy=panStart.vy-(e.clientY-panStart.y)*vh/rect.height;
-  applyVB();
+window.addEventListener('mousemove',function(e){
+  if(svgDragNode){var pt=svgPoint(e);svgDragNode.node.x=pt.x-svgDragOff.x;svgDragNode.node.y=pt.y-svgDragOff.y;renderSVG();return;}
+  if(panMode){var r=svg.getBoundingClientRect();vx=panStart.vx-(e.clientX-panStart.x)*vw/r.width;vy=panStart.vy-(e.clientY-panStart.y)*vh/r.height;applyVB();}
 });
-window.addEventListener('mouseup',()=>{panning=false;});
-svg.addEventListener('wheel',e=>{
-  e.preventDefault(); if(editState) return;
-  const rect=svg.getBoundingClientRect();
-  const mx=(e.clientX-rect.left)/rect.width*vw+vx;
-  const my=(e.clientY-rect.top)/rect.height*vh+vy;
-  const f=e.deltaY>0?1.1:.91;
-  vw*=f;vh*=f;vx=mx-(mx-vx)*f;vy=my-(my-vy)*f;applyVB();
-},{passive:false});
-function zoom(f){const cx=vx+vw/2,cy=vy+vh/2;vw*=f;vh*=f;vx=cx-vw/2;vy=cy-vh/2;applyVB();}
-function resetView(){vx=-80;vy=-40;vw=1100;vh=740;applyVB();}
+window.addEventListener('mouseup',function(){svgDragNode=null;panMode=false;});
+svg.addEventListener('wheel',function(e){e.preventDefault();if(editState)return;var r=svg.getBoundingClientRect();var mx=(e.clientX-r.left)/r.width*vw+vx;var my=(e.clientY-r.top)/r.height*vh+vy;var f=e.deltaY>0?1.1:.91;vw*=f;vh*=f;vx=mx-(mx-vx)*f;vy=my-(my-vy)*f;applyVB();},{passive:false});
+function zoom(f){var cx=vx+vw/2,cy=vy+vh/2;vw*=f;vh*=f;vx=cx-vw/2;vy=cy-vh/2;applyVB();}
+function resetView(){vx=-200;vy=-300;vw=1100;vh=750;applyVB();}
 
-/* ─── SVG Layout constants ─── */
-const NODE_H=32, NODE_GAP_Y=10;
-const COL_W=140, COL_GAP=48;
-const ROOT_W=96, ROOT_H=42;
-const FONT=11;
-
-/* measure subtree height */
-function subtreeH(node){
-  if(!node.children.length) return NODE_H;
-  const childrenH=node.children.reduce((s,c,i)=>s+subtreeH(c)+(i?NODE_GAP_Y:0),0);
-  return Math.max(NODE_H,childrenH);
+const ROOT_W=96,ROOT_H=42,NODE_H=30,COL_GAP=56,ROW_GAP=10;
+function textPx(str,fs){var w=0;fs=fs||11;for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);w+=(c>127)?fs:fs*0.62;}return w;}
+function nodeW(depth,name){var base=Math.max(86,130-depth*6);if(!name)return base;var fs=depth===0?12:11;var needed=textPx(name,fs)+26;return Math.max(base,needed);}
+function subtreeH(node){if(!node.children.length||!node.open)return NODE_H;var ch=node.children.reduce(function(s,c,i){return s+subtreeH(c)+(i?ROW_GAP:0);},0);return Math.max(NODE_H,ch);}
+function autoLayout(){
+  if(!roots.length)return;
+  var totalH=roots.reduce(function(s,r,i){return s+subtreeH(r)+(i?ROW_GAP*2:0);},0);
+  var curY=-totalH/2+ROOT_H/2;
+  roots.forEach(function(r){var sh=subtreeH(r);var midY=curY+sh/2;r.x=ROOT_W+COL_GAP;r.y=midY-NODE_H/2;layoutChildren(r,1);curY+=sh+ROW_GAP*2;});
+  renderSVG();
+}
+function layoutChildren(parent,depth){
+  if(!parent.children.length||!parent.open)return;
+  var pw=nodeW(depth-1,parent.name),cx=parent.x+pw+COL_GAP,pMidY=parent.y+NODE_H/2;
+  var totalCH=parent.children.reduce(function(s,c,i){return s+subtreeH(c)+(i?ROW_GAP:0);},0);
+  var childY=pMidY-totalCH/2;
+  parent.children.forEach(function(child){var sh=subtreeH(child);child.x=cx;child.y=childY+sh/2-NODE_H/2;layoutChildren(child,depth+1);childY+=sh+ROW_GAP;});
 }
 
-/* ─── SVG Render ─── */
 function renderSVG(){
-  const root=document.getElementById('map-root');
-
-  const totalH=roots.reduce((s,r,i)=>s+subtreeH(r)+(i?NODE_GAP_Y*2:0),0);
-  const rootY=(totalH-ROOT_H)/2;
-  const rootX=0;
-
-  let paths='',nodes='';
-
-  /* root box */
-  nodes+=`<rect x="${rootX}" y="${rootY}" width="${ROOT_W}" height="${ROOT_H}" rx="9" fill="#0969da"/>`;
-  nodes+=`<text x="${rootX+ROOT_W/2}" y="${rootY+ROOT_H/2}" text-anchor="middle" dominant-baseline="central"
-    font-family="'Space Mono',monospace" font-size="12" font-weight="700" fill="#fff">IPAS</text>`;
-
-  /* draw tree columns */
-  let curY=0;
-  roots.forEach((r,ri)=>{
-    const col=COLORS[ri%COLORS.length];
-    const sh=subtreeH(r);
-    const rMidY=curY+sh/2;
-
-    /* connector root→col1 */
-    const rx1=rootX+ROOT_W, ry1=rootY+ROOT_H/2;
-    const bx=rootX+ROOT_W+COL_GAP, bw=COL_W, bh=NODE_H;
-    const by=rMidY-bh/2;
-    const cp=(rx1+bx)/2;
-    paths+=`<path d="M${rx1},${ry1} C${cp},${ry1} ${cp},${rMidY} ${bx},${rMidY}"
-      fill="none" stroke="${col}" stroke-width="1.6" opacity=".45"/>`;
-
-    /* level-1 node */
-    const hasNote=r.note&&r.note.trim();
-    nodes+=svgNode(r,col,bx,by,bw,bh,1);
-    if(hasNote) nodes+=noteIndicator(bx+bw-10,by+4,col);
-
-    /* recurse children */
-    const {p,n}=drawChildren(r.children,bx+bw,rMidY,curY,col,2);
-    paths+=p; nodes+=n;
-
-    curY+=sh+NODE_GAP_Y*2;
+  var root=document.getElementById('map-root');
+  var hint=document.getElementById('empty-hint');
+  if(!roots.length){root.innerHTML='';hint.style.display='flex';updateStats();return;}
+  hint.style.display='none';
+  var title=document.getElementById('map-title').value.trim()||'主題';
+  var paths='',nodes='';
+  nodes+='<rect x="0" y="0" width="'+ROOT_W+'" height="'+ROOT_H+'" rx="9" fill="#0969da"/>';
+  nodes+='<text x="'+(ROOT_W/2)+'" y="'+(ROOT_H/2)+'" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans TC,sans-serif" font-size="11" font-weight="700" fill="#fff">'+(title.length>7?title.slice(0,6)+'…':title)+'</text>';
+  roots.forEach(function(r,ri){
+    var col=COLORS[ri%COLORS.length];
+    paths+=bezier(ROOT_W,ROOT_H/2,r.x,r.y+NODE_H/2,col,1.6,.45,'');
+    var res=drawSubtree(r,col,1);paths+=res.p;nodes+=res.n;
   });
-
-  root.innerHTML=paths+nodes;
-  updateStats();
+  root.innerHTML=paths+nodes;updateStats();
 }
-
-function drawChildren(children,parentRx,parentMidY,offsetY,col,depth){
-  if(!children||!children.length) return {p:'',n:''};
-  let paths='',nodes='';
-  const cx=parentRx+COL_GAP;
-  const cw=Math.max(COL_W-depth*8,90);
-  const ch=NODE_H;
-
-  const totalCH=children.reduce((s,c,i)=>s+subtreeH(c)+(i?NODE_GAP_Y:0),0);
-  let childY=parentMidY-totalCH/2;
-
-  // clamp so children don't go negative
-  if(childY<offsetY) childY=offsetY;
-
-  children.forEach((child)=>{
-    const sh=subtreeH(child);
-    const cMidY=childY+sh/2;
-    const cy=cMidY-ch/2;
-    const cp=(parentRx+cx)/2;
-
-    paths+=`<path d="M${parentRx},${parentMidY} C${cp},${parentMidY} ${cp},${cMidY} ${cx},${cMidY}"
-      fill="none" stroke="${col}" stroke-width="${Math.max(.7,1.4-depth*.2)}" opacity="${Math.max(.2,.4-depth*.06)}" stroke-dasharray="${depth>1?'4 3':''}"/>`;
-
-    const hasNote=child.note&&child.note.trim();
-    nodes+=svgNode(child,col,cx,cy,cw,ch,depth);
-    if(hasNote) nodes+=noteIndicator(cx+cw-9,cy+3,col);
-
-    const {p,n}=drawChildren(child.children,cx+cw,cMidY,childY,col,depth+1);
-    paths+=p; nodes+=n;
-
-    childY+=sh+NODE_GAP_Y;
+function drawSubtree(node,col,depth){
+  var isL1=depth===1,fs=isL1?12:11,fw=isL1?'500':'400',rxv=isL1?8:14;
+  var bg=isL1?hexBg(col,.08):'#fff',sw=isL1?1.2:.8,tc=isL1?col:'#444';
+  var w=nodeW(depth-1,node.name),h=NODE_H,x=node.x,y=node.y;
+  var paths='',nodes='';
+  var en=node.name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  var hasNote=node.note&&node.note.trim();
+  var isSel=selectedId===node.id;
+  nodes+='<g data-nodeid="'+node.id+'" style="cursor:move" onclick="selectNode('+node.id+',event)" ondblclick="startSVGEdit(event,'+node.id+','+x+','+y+','+w+','+h+',\''+en+'\')">';
+  nodes+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rxv+'" fill="'+(isSel?hexBg(col,.18):bg)+'" stroke="'+col+'" stroke-width="'+(isSel?2.2:sw)+'"/>';
+  nodes+='<text x="'+(x+w/2)+'" y="'+(y+h/2)+'" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans TC,sans-serif" font-size="'+fs+'" font-weight="'+(isSel?'700':fw)+'" fill="'+tc+'" style="pointer-events:none">'+node.name+'</text>';
+  if(hasNote)nodes+='<circle cx="'+(x+w-7)+'" cy="'+(y+7)+'" r="4" fill="'+col+'" opacity=".75" style="pointer-events:none"/>';
+  nodes+='</g>';
+  node.children.forEach(function(child){
+    if(!node.open)return;
+    paths+=bezier(x+w,y+NODE_H/2,child.x,child.y+NODE_H/2,col,Math.max(.7,1.3-depth*.15),Math.max(.2,.38-depth*.05),depth>1?'4 3':'');
+    var res=drawSubtree(child,col,depth+1);paths+=res.p;nodes+=res.n;
   });
   return {p:paths,n:nodes};
 }
+function bezier(x1,y1,x2,y2,col,sw,op,dash){var cpx=(x1+x2)/2;return '<path d="M'+x1+','+y1+' C'+cpx+','+y1+' '+cpx+','+y2+' '+x2+','+y2+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" opacity="'+op+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>';}
 
-function svgNode(node,col,x,y,w,h,depth){
-  const isL1=depth===1;
-  const rx_val=isL1?8:14;
-  const fw=isL1?'500':'400';
-  const fs=isL1?12:FONT;
-  const txt=node.name.length>14?node.name.slice(0,13)+'…':node.name;
-  const bg=isL1?hexBg(col,.08):'#fff';
-  const stroke=col;
-  const sw=isL1?1.2:.8;
-  const tc=isL1?col:'#444';
-  const esc_name=node.name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-  return `<g data-btn="1" style="cursor:pointer"
-    ondblclick="startSVGEdit(event,${node.id},${x},${y},${w},${h},'${esc_name}')">
-    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx_val}"
-      fill="${bg}" stroke="${stroke}" stroke-width="${sw}"/>
-    <text x="${x+w/2}" y="${y+h/2}" text-anchor="middle" dominant-baseline="central"
-      font-family="'Noto Sans TC',sans-serif" font-size="${fs}" font-weight="${fw}" fill="${tc}">
-      <title>${node.name}</title>${txt}</text>
-  </g>`;
+var overlay=document.getElementById('svg-edit-overlay'),editInput=document.getElementById('svg-edit-input');
+function startSVGEdit(e,nodeId,rx,ry,rw,rh,cv){
+  e.stopPropagation();commitSVGEdit();
+  var wrap=document.getElementById('canvas-wrap'),sr=svg.getBoundingClientRect(),wr=wrap.getBoundingClientRect();
+  var sx=sr.width/vw,sy=sr.height/vh;
+  editState={nodeId:nodeId};
+  overlay.style.cssText='display:block;left:'+((rx-vx)*sx+sr.left-wr.left)+'px;top:'+((ry-vy)*sy+sr.top-wr.top)+'px;width:'+(rw*sx)+'px;height:'+(rh*sy)+'px;';
+  editInput.value=cv;editInput.focus();editInput.select();
 }
+function commitSVGEdit(){if(!editState)return;var val=editInput.value.trim();if(val){var f=findNode(editState.nodeId);if(f)f.node.name=val;}overlay.style.display='none';editState=null;render();}
+editInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();commitSVGEdit();}if(e.key==='Escape'){overlay.style.display='none';editState=null;renderSVG();}});
 
-function noteIndicator(x,y,col){
-  return `<circle cx="${x}" cy="${y}" r="4" fill="${col}" opacity=".7"/>`;
-}
-
-/* ─── SVG Inline Edit ─── */
-const overlay=document.getElementById('svg-edit-overlay');
-const editInput=document.getElementById('svg-edit-input');
-
-function startSVGEdit(e,nodeId,rx,ry,rw,rh,currentVal){
-  e.stopPropagation();
-  commitSVGEdit();
-  const wrap=document.getElementById('canvas-wrap');
-  const svgRect=svg.getBoundingClientRect();
-  const wrapRect=wrap.getBoundingClientRect();
-  const sx=svgRect.width/vw, sy=svgRect.height/vh;
-  const screenX=(rx-vx)*sx+svgRect.left-wrapRect.left;
-  const screenY=(ry-vy)*sy+svgRect.top-wrapRect.top;
-  editState={nodeId};
-  overlay.style.cssText=`display:block;left:${screenX}px;top:${screenY}px;width:${rw*sx}px;height:${rh*sy}px;`;
-  editInput.style.fontSize=Math.max(11,12*sx)+'px';
-  editInput.value=currentVal;
-  editInput.focus(); editInput.select();
-}
-function commitSVGEdit(){
-  if(!editState) return;
-  const val=editInput.value.trim();
-  if(val){const f=findNode(editState.nodeId); if(f) f.node.name=val;}
-  overlay.style.display='none'; editState=null; render();
-}
-editInput.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){e.preventDefault();commitSVGEdit();}
-  if(e.key==='Escape'){overlay.style.display='none';editState=null;renderSVG();}
-});
-document.getElementById('canvas-wrap').addEventListener('mousedown',e=>{
-  if(editState&&!overlay.contains(e.target)) commitSVGEdit();
-});
-
-/* ─── Note Panel ─── */
-let noteNodeId=null;
-function openNote(id){
-  const f=findNode(id); if(!f) return;
-  noteNodeId=id;
-  document.getElementById('np-node-name').textContent='節點：'+f.node.name;
-  document.getElementById('note-textarea').value=f.node.note||'';
-  document.getElementById('note-panel').classList.add('open');
-  document.getElementById('note-textarea').focus();
-}
+var noteNodeId=null;
+function openNote(id){var f=findNode(id);if(!f)return;noteNodeId=id;document.getElementById('np-node-name').textContent='節點：'+f.node.name;document.getElementById('note-textarea').value=f.node.note||'';document.getElementById('note-panel').classList.add('open');document.getElementById('note-textarea').focus();}
 function closeNote(){document.getElementById('note-panel').classList.remove('open');noteNodeId=null;}
-function saveNote(){
-  if(noteNodeId===null) return;
-  const f=findNode(noteNodeId); if(!f) return;
-  f.node.note=document.getElementById('note-textarea').value;
-  closeNote(); render();
-}
+function saveNote(){if(noteNodeId===null)return;var f=findNode(noteNodeId);if(!f)return;f.node.note=document.getElementById('note-textarea').value;closeNote();render();}
 
-/* ─── Sidebar Tree ─── */
 function renderSidebar(){
-  const el=document.getElementById('tree-list');
-  el.innerHTML=roots.length
-    ? roots.map((r,ri)=>renderTreeItem(r,0,COLORS[ri%COLORS.length],ri)).join('')
-    : '<div style="padding:12px 4px;font-size:12px;color:var(--text3)">尚無分支，請在下方新增</div>';
+  var el=document.getElementById('tree-list');
+  if(!roots.length){el.innerHTML='<div style="padding:16px 8px;font-size:12px;color:var(--text3);text-align:center;">還沒有分支</div>';return;}
+  el.innerHTML=roots.map(function(r,ri){return renderTreeItem(r,0,COLORS[ri%COLORS.length]);}).join('');
 }
-
-function renderTreeItem(node,depth,col,rootIdx){
-  const hasChildren=node.children.length>0;
-  const indent=depth*16;
-  const isRoot=depth===0;
-  const dotStyle=isRoot?`background:${col};border-color:${col};border-radius:3px;`:`border-color:${col};`;
-  const labelColor=isRoot?col:'var(--text)';
-  const noteIcon=node.note&&node.note.trim()?'📝':'📋';
-
-  let html=`<div class="tree-item" id="ti-${node.id}">
-    <div class="tree-row" onclick="toggleNodeOpen(${node.id})">
-      <div class="tree-indent" style="width:${indent}px"></div>
-      <div class="tree-toggle">${hasChildren?(node.open?'▾':'▸'):' '}</div>
-      <div class="tree-dot" style="${dotStyle}"></div>
-      <div class="bc-name-wrap" style="flex:1;min-width:0;">
-        <span class="tree-label" style="color:${labelColor};font-weight:${isRoot?500:400}"
-          ondblclick="startSBRename(${node.id},event)">${node.name}</span>
-        <input class="tree-label-input" id="sbi-${node.id}"
-          onblur="commitSBRename(${node.id},this)"
-          onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape')cancelSBRename(${node.id})"/>
-      </div>
-      <div class="tree-actions">
-        <button class="tree-btn" data-btn title="備註" onclick="event.stopPropagation();openNote(${node.id})">${noteIcon}</button>
-        <button class="tree-btn" data-btn title="新增子節點" onclick="event.stopPropagation();toggleAddChild(${node.id})">＋</button>
-        <button class="tree-btn del" data-btn title="刪除" onclick="event.stopPropagation();deleteNode(${node.id})">×</button>
-      </div>
-    </div>`;
-
-  /* inline add child row */
-  if(node.showAdd){
-    html+=`<div class="tree-add-row">
-      <input type="text" id="add-${node.id}" placeholder="新增子節點名稱…"
-        onkeydown="if(event.key==='Enter')addChild(${node.id});if(event.key==='Escape')cancelAddChild(${node.id})"/>
-      <button data-btn onclick="addChild(${node.id})">確定</button>
-    </div>`;
-  }
-
-  /* children */
-  if(hasChildren&&node.open){
-    const childRootIdx=depth===0?roots.indexOf(node):roots.findIndex(r=>containsNode(r,node.id));
-    const childCol=COLORS[childRootIdx<0?0:childRootIdx%COLORS.length];
-    html+=`<div class="tree-children">${node.children.map(c=>renderTreeItem(c,depth+1,childCol,childRootIdx)).join('')}</div>`;
-  }
-
-  html+=`</div>`;
-  return html;
+function containsNode(root,id){if(root.id===id)return true;return root.children.some(function(c){return containsNode(c,id);});}
+function getRootColor(nodeId){var ri=roots.findIndex(function(r){return containsNode(r,nodeId);});return COLORS[Math.max(0,ri)%COLORS.length];}
+function renderTreeItem(node,depth,col){
+  var hasChildren=node.children.length>0;var indent=depth*14;var isRoot=depth===0;
+  var dotStyle=isRoot?'background:'+col+';border-color:'+col+';border-radius:3px;':'border-color:'+col+';';
+  var noteIcon=node.note&&node.note.trim()?'📝':'📋';
+  var html='<div class="tree-item" data-id="'+node.id+'">';
+  html+='<div class="drop-indicator"></div>';
+  html+='<div class="tree-row" onclick="selectNode('+node.id+',event)">';
+  html+='<div style="width:'+indent+'px;flex-shrink:0"></div>';
+  html+='<div class="drag-handle"><span></span><span></span><span></span></div>';
+  html+='<div class="tree-toggle" onclick="toggleNodeOpen('+node.id+',event)">'+(hasChildren?(node.open?'▾':'▸'):'')+'</div>';
+  html+='<div class="tree-dot" style="'+dotStyle+'"></div>';
+  html+='<div class="label-wrap"><span class="tree-label" style="color:'+(isRoot?col:'var(--text)')+'">'+node.name+'</span>';
+  html+='<input class="tree-label-input" id="sbi-'+node.id+'" onblur="commitSBRename('+node.id+',this)" onkeydown="if(event.key===\'Enter\')this.blur();"/></div>';
+  html+='<div class="tree-actions"><button class="tree-btn" onclick="event.stopPropagation();openNote('+node.id+')">'+noteIcon+'</button>';
+  html+='<button class="tree-btn" onclick="event.stopPropagation();toggleAddChild('+node.id+')">＋</button>';
+  html+='<button class="tree-btn del" onclick="event.stopPropagation();deleteNode('+node.id+')">×</button></div></div>';
+  if(node.showAdd){html+='<div class="tree-add-row"><input type="text" id="add-'+node.id+'" placeholder="新增名稱…" onkeydown="if(event.key===\'Enter\')addChild('+node.id+')"/><button onclick="addChild('+node.id+')">確定</button></div>';}
+  if(hasChildren&&node.open){var cc=getRootColor(node.id);html+='<div class="tree-children">'+node.children.map(function(c){return renderTreeItem(c,depth+1,cc);}).join('')+'</div>';}
+  html+='</div>';return html;
 }
-
-function containsNode(root,id){
-  if(root.id===id) return true;
-  return root.children.some(c=>containsNode(c,id));
+function selectNode(id,e){
+  if(e)e.stopPropagation();
+  selectedId=id;
+  document.querySelectorAll('.tree-item.selected').forEach(function(el){el.classList.remove('selected');});
+  var el=document.querySelector('.tree-item[data-id="'+id+'"]');
+  if(el){el.classList.add('selected');el.scrollIntoView({block:'nearest'});}
+  renderSVG();
 }
-
-/* sidebar rename */
-function startSBRename(id,e){
-  e.stopPropagation();
-  const f=findNode(id); if(!f) return;
-  const span=document.querySelector(`#ti-${id} .tree-label`);
-  const inp=document.getElementById(`sbi-${id}`);
-  inp.value=f.node.name; span.style.display='none'; inp.style.display='block';
-  inp.focus(); inp.select();
-}
-function commitSBRename(id,inp){
-  const val=inp.value.trim(); const f=findNode(id);
-  if(f&&val) f.node.name=val; render();
-}
-function cancelSBRename(id){
-  const span=document.querySelector(`#ti-${id} .tree-label`);
-  const inp=document.getElementById(`sbi-${id}`);
-  if(span) span.style.display='';  if(inp) inp.style.display='none';
-}
-
-/* toggle open */
-function toggleNodeOpen(id){
-  const f=findNode(id); if(!f) return;
-  f.node.open=!f.node.open; renderSidebar();
-}
-
-/* add child */
-function toggleAddChild(id){
-  const f=findNode(id); if(!f) return;
-  f.node.showAdd=!f.node.showAdd;
-  renderSidebar();
-  if(f.node.showAdd) setTimeout(()=>{ const el=document.getElementById(`add-${id}`); if(el){el.focus();} },50);
-}
+function toggleNodeOpen(id,e){if(e)e.stopPropagation();var f=findNode(id);if(f){f.node.open=!f.node.open;autoLayout();render();}}
+function toggleAddChild(id){var f=findNode(id);if(!f)return;f.node.showAdd=!f.node.showAdd;renderSidebar();if(f.node.showAdd)setTimeout(function(){var el=document.getElementById('add-'+id);if(el)el.focus();},50);}
 function addChild(id){
-  const inp=document.getElementById(`add-${id}`); if(!inp) return;
-  const name=inp.value.trim(); if(!name) return;
-  const f=findNode(id); if(!f) return;
-  f.node.children.push(mkNode(name));
-  f.node.open=true; f.node.showAdd=false;
-  render();
+  var inp=document.getElementById('add-'+id);if(!inp)return;
+  var name=inp.value.trim();if(!name)return;
+  var f=findNode(id);if(!f)return;
+  var child=mkNode(name);
+  f.node.children.push(child);
+  f.node.open=true;f.node.showAdd=false;
+  autoLayout();render();
 }
-function cancelAddChild(id){
-  const f=findNode(id); if(!f) return;
-  f.node.showAdd=false; renderSidebar();
-}
-
-/* delete node */
-function deleteNode(id){
-  const f=findNode(id); if(!f) return;
-  const label=f.node.name;
-  if(!confirm(`確定刪除「${label}」及其所有子節點？`)) return;
-  f.siblings.splice(f.idx,1); render();
-}
-
-/* add root */
+function deleteNode(id){var f=findNode(id);if(!f)return;if(!confirm('確定刪除？'))return;f.siblings.splice(f.idx,1);autoLayout();render();}
 function addRootNode(){
-  const inp=document.getElementById('new-root-input');
-  const name=inp.value.trim(); if(!name) return;
-  roots.push(mkNode(name)); inp.value=''; render();
+  var inp=document.getElementById('new-root-input');
+  var name=inp.value.trim();if(!name)return;
+  roots.push(mkNode(name));
+  inp.value='';autoLayout();render();
 }
-
 function updateStats(){
-  let total=0;
-  function countAll(nodes){nodes.forEach(n=>{total++;countAll(n.children);});}
-  countAll(roots);
-  const depth=maxDepth(roots);
-  document.getElementById('stats-bar').innerHTML=
-    `<span>分支 <b>${roots.length}</b></span><span>節點 <b>${total}</b></span><span>最深 <b>${depth}</b> 層</span>`;
+  var total=0;function ca(ns){ns.forEach(function(n){total++;ca(n.children);});}ca(roots);
+  document.getElementById('stats-bar').innerHTML='<span>分支 <b>'+roots.length+'</b></span><span>節點 <b>'+total+'</b></span>';
 }
-function maxDepth(nodes,d=0){
-  if(!nodes.length) return d;
-  return Math.max(...nodes.map(n=>maxDepth(n.children,d+1)));
-}
-
 function render(){renderSidebar();renderSVG();}
 
-/* ─── JSON ─── */
+/* JSON 匯入邏輯修復：自動重新編號以避免重複 ID */
+function handleImport(e){
+  var file=e.target.files[0];if(!file)return;
+  var r=new FileReader();r.onload=function(ev){
+    try{
+      var data=JSON.parse(ev.target.result);
+      let tempRoots = Array.isArray(data) ? data : (data.nodes || []);
+      if(data.title && !Array.isArray(data)) document.getElementById('map-title').value=data.title;
+
+      // 關鍵修復：強制重新分配所有 ID 確保唯一性
+      let nextId = 1;
+      function reassign(nodes) {
+        nodes.forEach(n => {
+          n.id = nextId++;
+          if (n.children) reassign(n.children);
+        });
+      }
+      reassign(tempRoots);
+      roots = tempRoots;
+      _id = nextId; // 同步全域計數器
+
+      autoLayout();render();
+    }catch(err){alert('JSON 格式錯誤：' + err.message);}
+  };r.readAsText(file);e.target.value='';
+}
+
 function exportJSON(){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(roots,null,2)],{type:'application/json'}));
-  a.download='ipas-mindmap.json'; a.click();
+  var data={title:document.getElementById('map-title').value,nodes:roots};
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='mindmap.json';a.click();
 }
 function importJSON(){document.getElementById('import-file').click();}
-function handleImport(e){
-  const file=e.target.files[0]; if(!file) return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    try{roots=JSON.parse(ev.target.result);render();}
-    catch{alert('JSON 格式錯誤');}
-  };
-  r.readAsText(file); e.target.value='';
-}
+document.getElementById('new-root-input').addEventListener('keydown',function(e){if(e.key==='Enter')addRootNode();});
 
-document.getElementById('new-root-input').addEventListener('keydown',e=>{if(e.key==='Enter')addRootNode();});
-
-applyVB(); render();
+applyVB();render();
 </script>
 </body>
 </html>
