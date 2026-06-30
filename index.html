@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPAS 心智圖筆記 v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap');
+:root{--bg:#fff;--surface:#f6f8fa;--surface2:#eef1f4;--border:#d0d7de;--border2:#e2e7ec;--text:#1a1f25;--text2:#57606a;--text3:#a8b1ba;--accent:#0969da;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+header{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-badge{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;background:var(--accent);color:#fff;padding:3px 8px;border-radius:5px;}
+.logo-title-input{font-size:14px;font-weight:500;border:none;outline:none;background:transparent;color:var(--text);width:260px;}
+.logo-title-input::placeholder{color:var(--text3);}
+.logo-sub{font-size:11px;color:var(--text3);}
+.hdr-actions{display:flex;gap:7px;}
+.hdr-btn{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;}
+.hdr-btn:hover{background:var(--surface);}
+.hdr-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 48px);}
+.sidebar{width:290px;min-width:180px;max-width:600px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.sb-head{padding:11px 14px 7px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);border-bottom:1px solid var(--border2);}
+.sb-tip{padding:5px 13px;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border2);background:var(--surface2);line-height:1.7;}
+.sb-scroll{flex:1;overflow-y:auto;padding:6px 8px;}
+.sb-scroll::-webkit-scrollbar{width:4px;}
+.sb-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ── 起點群組 ── */
+.root-group{border:1.5px solid var(--border2);border-radius:9px;margin-bottom:8px;overflow:hidden;}
+.root-group-head{display:flex;align-items:center;gap:6px;padding:7px 9px;background:var(--surface2);border-bottom:1px solid var(--border2);cursor:default;}
+.root-dot-big{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+.root-group-name{flex:1;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.root-group-name-input{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:600;border:1px solid var(--accent);border-radius:4px;padding:1px 5px;outline:none;background:var(--bg);display:none;}
+.root-group-actions{display:flex;gap:3px;opacity:0;transition:opacity .1s;}
+.root-group-head:hover .root-group-actions{opacity:1;}
+.root-group-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:1px 4px;border-radius:3px;line-height:1;}
+.root-group-btn:hover{background:var(--border2);color:var(--text);}
+.root-group-btn.del:hover{color:#c0392b;}
+.root-group-body{padding:4px 4px;}
+
+.tree-item{border-radius:7px;margin-bottom:2px;position:relative;}
+.tree-row{display:flex;align-items:flex-start;gap:4px;padding:5px 6px;border-radius:7px;user-select:none;transition:background .1s;}
+.tree-row:hover{background:var(--surface2);}
+.drag-handle{flex-shrink:0;width:18px;height:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:grab;opacity:0;transition:opacity .15s;border-radius:4px;margin-top:3px;}
+.drag-handle:active{cursor:grabbing;}
+.drag-handle span{display:block;width:10px;height:1.5px;background:var(--text3);border-radius:1px;}
+.tree-row:hover .drag-handle{opacity:1;}
+.drag-handle:hover{background:var(--border2);}
+.tree-toggle{margin-top:3px;width:14px;height:14px;flex-shrink:0;font-size:9px;color:var(--text3);display:flex;align-items:center;justify-content:center;border-radius:3px;cursor:pointer;}
+.tree-dot{margin-top:5px;width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1.5px solid currentColor;}
+.sb-resizer{position:absolute;right:0;top:0;bottom:0;width:5px;cursor:col-resize;z-index:100;background:transparent;transition:background 0.2s;}
+.sb-resizer:hover,.sb-resizer.resizing{background:var(--accent);opacity:0.5;}
+.label-wrap{flex:1;min-width:0;}
+.tree-label{display:block;font-size:12px;white-space:normal;word-break:break-all;line-height:1.45;cursor:pointer;}
+.tree-label-input{font-family:'Noto Sans TC',sans-serif;font-size:12px;width:100%;border:1px solid var(--accent);border-radius:4px;padding:1px 5px;outline:none;background:var(--bg);color:var(--text);display:none;}
+.tree-actions{display:flex;gap:2px;opacity:0;transition:opacity .1s;flex-shrink:0;}
+.tree-row:hover .tree-actions{opacity:1;}
+.tree-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:12px;padding:1px 4px;border-radius:3px;line-height:1;}
+.tree-btn:hover{background:var(--border2);color:var(--text);}
+.tree-btn.del:hover{color:#c0392b;}
+.tree-children{margin-left:14px;}
+.tree-add-row{display:flex;gap:4px;margin:2px 0 4px 28px;}
+.drop-indicator{height:2px;border-radius:2px;margin:0 4px;background:var(--accent);box-shadow:0 0 6px rgba(9,105,218,.5);display:none;}
+.tree-item.drop-target>.tree-row{background:rgba(9,105,218,.07);outline:1.5px dashed var(--accent);outline-offset:-1px;}
+.tree-item.is-dragging{opacity:.3;}
+.tree-item.selected>.tree-row{background:rgba(9,105,218,.10);border-radius:7px;}
+.tree-item.selected>.tree-row .tree-label{color:var(--accent);font-weight:500;}
+#drag-ghost{position:fixed;pointer-events:none;z-index:9999;background:var(--bg);border:1.5px solid var(--accent);border-radius:7px;padding:5px 12px;font-size:12px;font-weight:500;color:var(--text);box-shadow:0 6px 20px rgba(9,105,218,.2);white-space:nowrap;display:none;font-family:'Noto Sans TC',sans-serif;transform:translate(-8px,-50%);}
+.sb-toolbar{display:flex;gap:4px;padding:5px 8px;border-bottom:1px solid var(--border2);background:var(--bg);}
+.sb-tool-btn{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:11px;padding:4px 6px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;transition:all .12s;}
+.sb-tool-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border);}
+
+/* ── 新增起點按鈕 ── */
+.sb-add-root{padding:7px 9px;border-top:1px solid var(--border2);background:var(--surface);}
+.sb-add-root input{width:100%;font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:5px 9px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);outline:none;margin-bottom:5px;}
+.sb-add-root input:focus{border-color:var(--accent);}
+.sb-add-root-btns{display:flex;gap:5px;}
+.sb-add-root-btns button{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:11px;padding:5px 8px;border-radius:6px;cursor:pointer;font-weight:500;}
+.btn-add-root{background:var(--accent);border:none;color:#fff;}
+.btn-add-child-root{background:var(--surface2);border:1px solid var(--border);color:var(--text2);}
+
+.canvas-wrap{flex:1;overflow:hidden;position:relative;background:#fff;}
+.canvas-wrap::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,#cdd2d8 1px,transparent 1px);background-size:22px 22px;pointer-events:none;opacity:.5;}
+#map-svg{width:100%;height:100%;display:block;position:relative;z-index:1;cursor:grab;}
+#map-svg:active{cursor:grabbing;}
+#svg-edit-overlay{position:absolute;z-index:20;display:none;}
+#svg-edit-input{font-family:'Noto Sans TC',sans-serif;font-size:12px;font-weight:500;border:1.5px solid var(--accent);border-radius:6px;padding:3px 8px;outline:none;background:#fff;color:#333;box-shadow:0 2px 8px rgba(9,105,218,.15);width:100%;height:100%;}
+#note-panel{position:absolute;right:0;top:0;bottom:0;width:275px;background:var(--bg);border-left:1px solid var(--border);display:none;flex-direction:column;z-index:15;box-shadow:-4px 0 16px rgba(0,0,0,.06);}
+#note-panel.open{display:flex;}
+.np-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border2);}
+.np-title{font-size:13px;font-weight:500;}
+.np-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;line-height:1;}
+.np-node-name{padding:7px 14px;font-size:11px;color:var(--text2);border-bottom:1px solid var(--border2);background:var(--surface);}
+.np-body{flex:1;display:flex;flex-direction:column;padding:12px 14px;gap:8px;}
+.np-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);}
+#note-textarea{flex:1;font-family:'Noto Sans TC',sans-serif;font-size:12px;border:1px solid var(--border);border-radius:6px;padding:8px 10px;resize:none;outline:none;color:var(--text);line-height:1.7;}
+#note-textarea:focus{border-color:var(--accent);}
+.np-save{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:7px;background:var(--accent);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:500;}
+.zoom-btns{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:2px;z-index:5;}
+.zoom-btns button{font-size:16px;width:32px;height:32px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.zoom-btns button.lbl{font-size:11px;width:auto;padding:0 10px;}
+.zoom-btns button:hover{background:var(--surface);}
+.stats-bar{position:absolute;bottom:14px;right:16px;display:flex;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:5px 13px;font-size:10px;font-family:'Space Mono',monospace;color:var(--text2);z-index:5;}
+.stats-bar b{color:var(--text);}
+.empty-hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none;z-index:2;}
+.empty-hint-icon{font-size:36px;opacity:.18;}
+.empty-hint-text{font-size:13px;color:var(--text3);}
+</style>
+</head>
+<body>
+<div id="drag-ghost"></div>
+<header>
+  <div class="logo">
+    <span class="logo-badge">MAP</span>
+    <div>
+      <input class="logo-title-input" id="map-title" placeholder="輸入心智圖標題…" value=""/>
+      <div class="logo-sub">心智圖筆記工具｜多起點 · 節點摺疊</div>
+    </div>
+  </div>
+  <div class="hdr-actions">
+    <button class="hdr-btn" onclick="autoLayout()">⟳ 自動排列</button>
+    <button class="hdr-btn" onclick="exportCanvas()">🖼 匯出畫布</button>
+    <button class="hdr-btn" onclick="exportJSON()">匯出 JSON</button>
+    <button class="hdr-btn" onclick="importJSON()">匯入 JSON</button>
+    <span style="width:1px;height:18px;background:var(--border);margin:0 2px;"></span>
+    <button class="hdr-btn" id="cloud-open-btn" onclick="openCloudPanel()">📂 我的心智圖</button>
+    <button class="hdr-btn primary" id="cloud-save-btn" onclick="saveToCloud()">☁ 雲端儲存</button>
+    <button class="hdr-btn" id="auth-btn" onclick="handleAuthClick()">登入</button>
+    <button class="hdr-btn primary" onclick="resetView()">重置視圖</button>
+  </div>
+</header>
+
+<!-- ── 雲端面板 ── -->
+<div id="cloud-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:998;"></div>
+<div id="cloud-panel" style="display:none;position:fixed;top:60px;right:18px;width:320px;max-height:70vh;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);z-index:999;flex-direction:column;overflow:hidden;font-family:'Noto Sans TC',sans-serif;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border2);">
+    <span style="font-size:13px;font-weight:600;">☁ 我的心智圖</span>
+    <button onclick="closeCloudPanel()" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--text3);">×</button>
+  </div>
+  <div id="cloud-status" style="padding:8px 14px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border2);">尚未登入</div>
+  <div id="cloud-list" style="flex:1;overflow-y:auto;padding:6px;"></div>
+</div>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-resizer" id="sb-resizer"></div>
+    <div class="sb-head">起點與節點</div>
+    <div class="sb-tip">☰ 拖曳把手調換順序 ｜ ✏️ 雙擊名稱修改<br>▸/▾ 摺疊展開 ｜ 📝 備註 ｜ ＋ 子層</div>
+    <div class="sb-toolbar">
+      <button class="sb-tool-btn" onclick="collapseAll()" title="折疊所有子節點">⊖ 全部折疊</button>
+      <button class="sb-tool-btn" onclick="expandAll()" title="展開所有子節點">⊕ 全部展開</button>
+    </div>
+    <div class="sb-scroll" id="tree-list"></div>
+    <div class="sb-add-root">
+      <input type="text" id="new-root-input" placeholder="新增起點名稱…"/>
+      <div class="sb-add-root-btns">
+        <button class="btn-add-root" onclick="addRootNode()">＋ 新增起點</button>
+      </div>
+    </div>
+  </div>
+  <div class="canvas-wrap" id="canvas-wrap">
+    <svg id="map-svg" xmlns="http://www.w3.org/2000/svg"><g id="map-root"></g></svg>
+    <div id="svg-edit-overlay"><input id="svg-edit-input" type="text"/></div>
+    <div id="note-panel">
+      <div class="np-head"><span class="np-title">📝 備註</span><button class="np-close" onclick="closeNote()">×</button></div>
+      <div class="np-node-name" id="np-node-name"></div>
+      <div class="np-body">
+        <div class="np-label">筆記 / 重點說明</div>
+        <textarea id="note-textarea" placeholder="在此輸入備註、解釋、記憶技巧…"></textarea>
+        <button class="np-save" onclick="saveNote()">儲存備註</button>
+      </div>
+    </div>
+    <div class="empty-hint" id="empty-hint">
+      <div class="empty-hint-icon">🗺</div>
+      <div class="empty-hint-text">在左側新增第一個起點，開始建立心智圖</div>
+    </div>
+    <div class="zoom-btns">
+      <button onclick="zoom(0.82)">−</button>
+      <button class="lbl" onclick="resetView()">重置</button>
+      <button onclick="zoom(1.22)">+</button>
+    </div>
+    <div class="stats-bar" id="stats-bar"></div>
+  </div>
+</div>
+<input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
+<script>
+const COLORS=['#0969da','#6639ba','#c0392b','#0a7a5f','#b45309','#9b2d6e','#2d7a3a','#0f5a7a'];
+function hexBg(h,a){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return 'rgba('+r+','+g+','+b+','+(a||.07)+')';}
+
+let _id=1;
+let selectedId=null;
+
+// ══════════════════════════════════════════════
+// 多起點結構：roots 是起點陣列，每個起點有獨立 label
+// root: { id, label, color, collapsed, node: treeNode }
+// ══════════════════════════════════════════════
+let roots=[];  // [{id, label, color, collapsed, node}]
+
+function mkRootEntry(label, colorIdx) {
+  var ci = (colorIdx !== undefined ? colorIdx : roots.length) % COLORS.length;
+  return {
+    id: _id++,
+    label: label || '起點',
+    color: COLORS[ci],
+    collapsed: false,  // 起點群組是否在 sidebar 折疊
+    node: mkNode(label || '起點')
+  };
+}
+
+function mkNode(name,children){return {id:_id++,name:name||'',note:'',open:true,showAdd:false,children:children||[],x:0,y:0};}
+
+// ── findNode: 在特定起點的 tree 裡找節點 ──
+function findNode(id, nodes, parent){
+  nodes = nodes || allNodes();
+  for(var i=0;i<nodes.length;i++){
+    if(nodes[i].id===id) return {node:nodes[i],siblings:nodes,idx:i,parent:parent||null};
+    var f=findNode(id,nodes[i].children,nodes[i]);
+    if(f) return f;
+  }
+  return null;
+}
+
+// 取得所有起點的根節點（一級節點）
+function allRootNodes(){ return roots.map(function(r){return r.node;}); }
+
+// 在所有起點裡搜尋
+function allNodes(){ return allRootNodes(); }
+
+// 找到節點所屬起點
+function findRootEntry(nodeId) {
+  for(var i=0;i<roots.length;i++){
+    if(containsNode(roots[i].node, nodeId)) return roots[i];
+  }
+  return null;
+}
+
+function findRootEntryById(rootId) {
+  return roots.find(function(r){return r.id===rootId;}) || null;
+}
+
+// ── sidebar 拉寬 ──
+const sidebar = document.querySelector('.sidebar');
+const resizer = document.getElementById('sb-resizer');
+let isResizing = false;
+resizer.addEventListener('mousedown', function(e){
+  isResizing=true; resizer.classList.add('resizing');
+  document.body.style.cursor='col-resize'; document.body.style.userSelect='none';
+});
+window.addEventListener('mousemove', function(e){
+  if(!isResizing) return;
+  let w=e.clientX; if(w<180)w=180; if(w>600)w=600;
+  sidebar.style.width=w+'px';
+});
+window.addEventListener('mouseup', function(){
+  if(isResizing){ isResizing=false; resizer.classList.remove('resizing'); document.body.style.cursor='default'; document.body.style.userSelect='auto'; }
+});
+
+// ── 全部折疊 / 展開 ──
+function collapseAll(){
+  function tr(ns){ ns.forEach(n=>{ n.open=false; if(n.children) tr(n.children); }); }
+  roots.forEach(function(r){ tr([r.node]); });
+  autoLayout(); render();
+}
+function expandAll(){
+  function tr(ns){ ns.forEach(n=>{ n.open=true; if(n.children) tr(n.children); }); }
+  roots.forEach(function(r){ tr([r.node]); });
+  autoLayout(); render();
+}
+
+// ── 起點管理 ──
+function addRootNode(){
+  var inp=document.getElementById('new-root-input');
+  var name=inp.value.trim(); if(!name) return;
+  roots.push(mkRootEntry(name));
+  inp.value=''; autoLayout(); render();
+}
+
+function deleteRootEntry(rootId){
+  if(!confirm('確定刪除此起點及所有子節點？')) return;
+  var idx=roots.findIndex(function(r){return r.id===rootId;});
+  if(idx>=0){ roots.splice(idx,1); autoLayout(); render(); }
+}
+
+function renameRootEntry(rootId, newName){
+  var r=findRootEntryById(rootId);
+  if(r){ r.label=newName; r.node.name=newName; autoLayout(); render(); }
+}
+
+function toggleRootCollapse(rootId){
+  var r=findRootEntryById(rootId);
+  if(r){ r.collapsed=!r.collapsed; renderSidebar(); }
+}
+
+// ── exportCanvas ──
+function exportCanvas(){
+  const svgEl=document.getElementById('map-svg');
+  const svgClone=svgEl.cloneNode(true);
+  const style=document.createElement('style');
+  style.textContent='text{font-family:"Noto Sans TC",sans-serif;}rect{stroke-linejoin:round;}';
+  svgClone.insertBefore(style,svgClone.firstChild);
+  const source=new XMLSerializer().serializeToString(svgClone);
+  const blob=new Blob([source],{type:'image/svg+xml;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='mindmap-'+(document.getElementById('map-title').value||'export')+'.svg';
+  a.click();
+}
+
+// ── SVG pan / zoom ──
+const svg=document.getElementById('map-svg');
+let vx=-200,vy=-300,vw=1100,vh=750,panMode=false,panStart=null,editState=null,svgDragNode=null,svgDragOff={x:0,y:0};
+function applyVB(){svg.setAttribute('viewBox',vx+' '+vy+' '+vw+' '+vh);}
+function svgPoint(e){var r=svg.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*vw+vx,y:(e.clientY-r.top)/r.height*vh+vy};}
+
+svg.addEventListener('mousedown',function(e){
+  if(e.button!==0||editState) return;
+  var el=e.target.closest('[data-nodeid]');
+  if(el){
+    var id=parseInt(el.dataset.nodeid);
+    var f=findNode(id);
+    if(!f) return;
+    var pt=svgPoint(e);
+    svgDragNode={id:id,node:f.node};
+    svgDragOff={x:pt.x-f.node.x,y:pt.y-f.node.y};
+    e.preventDefault(); return;
+  }
+  panMode=true; panStart={x:e.clientX,y:e.clientY,vx:vx,vy:vy}; e.preventDefault();
+});
+window.addEventListener('mousemove',function(e){
+  if(svgDragNode){var pt=svgPoint(e);svgDragNode.node.x=pt.x-svgDragOff.x;svgDragNode.node.y=pt.y-svgDragOff.y;renderSVG();return;}
+  if(panMode){var r=svg.getBoundingClientRect();vx=panStart.vx-(e.clientX-panStart.x)*vw/r.width;vy=panStart.vy-(e.clientY-panStart.y)*vh/r.height;applyVB();}
+});
+window.addEventListener('mouseup',function(){svgDragNode=null;panMode=false;});
+svg.addEventListener('wheel',function(e){
+  e.preventDefault();if(editState)return;
+  var r=svg.getBoundingClientRect();var mx=(e.clientX-r.left)/r.width*vw+vx;var my=(e.clientY-r.top)/r.height*vh+vy;
+  var f=e.deltaY>0?1.1:.91;vw*=f;vh*=f;vx=mx-(mx-vx)*f;vy=my-(my-vy)*f;applyVB();
+},{passive:false});
+function zoom(f){var cx=vx+vw/2,cy=vy+vh/2;vw*=f;vh*=f;vx=cx-vw/2;vy=cy-vh/2;applyVB();}
+function resetView(){vx=-200;vy=-300;vw=1100;vh=750;applyVB();}
+
+// ── Layout ──
+const ROOT_W=96,ROOT_H=42,NODE_H=30,COL_GAP=56,ROW_GAP=10;
+function textPx(str,fs){var w=0;fs=fs||11;for(var i=0;i<str.length;i++){var c=str.charCodeAt(i);w+=(c>127)?fs:fs*0.62;}return w;}
+function nodeW(depth,name){var base=Math.max(86,130-depth*6);if(!name)return base;var fs=depth===0?12:11;var needed=textPx(name,fs)+26;return Math.max(base,needed);}
+function subtreeH(node){if(!node.children.length||!node.open)return NODE_H;var ch=node.children.reduce(function(s,c,i){return s+subtreeH(c)+(i?ROW_GAP:0);},0);return Math.max(NODE_H,ch);}
+
+// 多起點布局：每個起點有自己的根節點，垂直排列（各自的根節點 + 子樹）
+// 佈局：左側放每個起點自己的根節點方塊，右側展開子樹
+const GROUP_GAP = 40; // 起點之間的間距
+
+function autoLayout(){
+  if(!roots.length) return;
+  // 計算每個起點群組高度（根節點 + 子樹）
+  var groups = roots.map(function(r){
+    return {rootEntry: r, h: subtreeH(r.node)};
+  });
+  var totalH = groups.reduce(function(s,g,i){return s+g.h+(i?GROUP_GAP:0);},0);
+  var curY = -totalH/2;
+
+  groups.forEach(function(g){
+    var r = g.rootEntry;
+    var node = r.node;
+    var sh = g.h;
+    // 根節點的 X 從 0 開始（就是這個起點自己的根方塊）
+    node.x = ROOT_W + COL_GAP;
+    node.y = curY + sh/2 - NODE_H/2;
+    layoutChildren(node, 1);
+    curY += sh + GROUP_GAP;
+  });
+  renderSVG();
+}
+
+function layoutChildren(parent,depth){
+  if(!parent.children.length||!parent.open)return;
+  var pw=nodeW(depth-1,parent.name),cx=parent.x+pw+COL_GAP,pMidY=parent.y+NODE_H/2;
+  var totalCH=parent.children.reduce(function(s,c,i){return s+subtreeH(c)+(i?ROW_GAP:0);},0);
+  var childY=pMidY-totalCH/2;
+  parent.children.forEach(function(child){var sh=subtreeH(child);child.x=cx;child.y=childY+sh/2-NODE_H/2;layoutChildren(child,depth+1);childY+=sh+ROW_GAP;});
+}
+
+// ── SVG 渲染 ──
+function renderSVG(){
+  var mapRoot=document.getElementById('map-root');
+  var hint=document.getElementById('empty-hint');
+  if(!roots.length){mapRoot.innerHTML='';hint.style.display='flex';updateStats();return;}
+  hint.style.display='none';
+
+  var paths='', nodes='';
+
+  roots.forEach(function(re, ri){
+    var col = re.color;
+    var rn = re.node;
+    var rw = ROOT_W, rh = ROOT_H;
+    var rx = 0, ry = rn.y + NODE_H/2 - rh/2;
+
+    // 起點根節點（彩色方塊）
+    var en = re.label.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var isSel = selectedId === rn.id;
+    nodes += '<g data-nodeid="'+rn.id+'" style="cursor:move" onclick="selectNode('+rn.id+',event)" ondblclick="startSVGEdit(event,'+rn.id+','+rx+','+ry+','+rw+','+rh+',\''+en+'\')">';
+    nodes += '<rect x="'+rx+'" y="'+ry+'" width="'+rw+'" height="'+rh+'" rx="9" fill="'+(isSel?hexBg(col,.6):col)+'" stroke="'+col+'" stroke-width="'+(isSel?2.5:0)+'"/>';
+    nodes += '<text x="'+(rx+rw/2)+'" y="'+(ry+rh/2)+'" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans TC,sans-serif" font-size="11" font-weight="700" fill="#fff" style="pointer-events:none">'+(re.label.length>7?re.label.slice(0,6)+'…':re.label)+'</text>';
+
+    // 摺疊按鈕（在起點根節點右下角）
+    if(rn.children.length > 0){
+      var btnR = 8, btnX = rx + rw - btnR - 2, btnY = ry + rh - btnR - 2;
+      nodes += '<g onclick="toggleSVGCollapse('+rn.id+',event)" style="cursor:pointer">';
+      nodes += '<circle cx="'+btnX+'" cy="'+btnY+'" r="'+btnR+'" fill="#fff" stroke="'+col+'" stroke-width="1.5" opacity=".95"/>';
+      nodes += '<text x="'+btnX+'" y="'+btnY+'" text-anchor="middle" dominant-baseline="central" font-size="9" fill="'+col+'" style="pointer-events:none;font-weight:700">'+(rn.open?'−':'+')+'</text>';
+      nodes += '</g>';
+    }
+    nodes += '</g>';
+
+    // 連線 & 子樹
+    if(rn.open){
+      rn.children.forEach(function(child){
+        paths += bezier(rw, ry+rh/2, child.x, child.y+NODE_H/2, col, 1.6, .45, '');
+        var res = drawSubtree(child, col, 1);
+        paths += res.p; nodes += res.n;
+      });
+    }
+  });
+
+  mapRoot.innerHTML = paths + nodes;
+  updateStats();
+}
+
+function drawSubtree(node,col,depth){
+  var isL1=depth===1,fs=isL1?12:11,fw=isL1?'500':'400',rxv=isL1?8:14;
+  var bg=isL1?hexBg(col,.08):'#fff',sw=isL1?1.2:.8,tc=isL1?col:'#444';
+  var w=nodeW(depth-1,node.name),h=NODE_H,x=node.x,y=node.y;
+  var paths='',nodes='';
+  var en=node.name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  var hasNote=node.note&&node.note.trim();
+  var isSel=selectedId===node.id;
+
+  nodes+='<g data-nodeid="'+node.id+'" style="cursor:move" onclick="selectNode('+node.id+',event)" ondblclick="startSVGEdit(event,'+node.id+','+x+','+y+','+w+','+h+',\''+en+'\')">';
+  nodes+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rxv+'" fill="'+(isSel?hexBg(col,.18):bg)+'" stroke="'+col+'" stroke-width="'+(isSel?2.2:sw)+'"/>';
+  nodes+='<text x="'+(x+w/2)+'" y="'+(y+h/2)+'" text-anchor="middle" dominant-baseline="central" font-family="Noto Sans TC,sans-serif" font-size="'+fs+'" font-weight="'+(isSel?'700':fw)+'" fill="'+tc+'" style="pointer-events:none">'+node.name+'</text>';
+  if(hasNote){
+    nodes+='<circle cx="'+(x+w/2)+'" cy="'+y+'" r="5" fill="'+col+'" opacity=".85" style="pointer-events:none"/>';
+  }
+
+  // 摺疊按鈕（有子節點才顯示）
+  if(node.children.length > 0){
+    var btnR=7, btnX=x+w-btnR-1, btnY=y+h/2;
+    nodes+='<g onclick="toggleSVGCollapse('+node.id+',event)" style="cursor:pointer">';
+    nodes+='<circle cx="'+btnX+'" cy="'+btnY+'" r="'+btnR+'" fill="#fff" stroke="'+col+'" stroke-width="1.2" opacity=".9"/>';
+    nodes+='<text x="'+btnX+'" y="'+btnY+'" text-anchor="middle" dominant-baseline="central" font-size="8" fill="'+col+'" style="pointer-events:none;font-weight:700">'+(node.open?'−':'+')+'</text>';
+    nodes+='</g>';
+  }
+
+  nodes+='</g>';
+
+  node.children.forEach(function(child){
+    if(!node.open)return;
+    paths+=bezier(x+w,y+NODE_H/2,child.x,child.y+NODE_H/2,col,Math.max(.7,1.3-depth*.15),Math.max(.2,.38-depth*.05),depth>1?'4 3':'');
+    var res=drawSubtree(child,col,depth+1);paths+=res.p;nodes+=res.n;
+  });
+  return {p:paths,n:nodes};
+}
+
+// ── 摺疊/展開單一節點（SVG 按鈕觸發）──
+function toggleSVGCollapse(id, e){
+  if(e){ e.stopPropagation(); }
+  var f = findNode(id);
+  if(!f) return;
+  f.node.open = !f.node.open;
+  autoLayout(); render();
+}
+
+function bezier(x1,y1,x2,y2,col,sw,op,dash){var cpx=(x1+x2)/2;return '<path d="M'+x1+','+y1+' C'+cpx+','+y1+' '+cpx+','+y2+' '+x2+','+y2+'" fill="none" stroke="'+col+'" stroke-width="'+sw+'" opacity="'+op+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+'/>';}
+
+// ── SVG 直接編輯 ──
+var overlay=document.getElementById('svg-edit-overlay'),editInput=document.getElementById('svg-edit-input');
+function startSVGEdit(e,nodeId,rx,ry,rw,rh,cv){
+  e.stopPropagation();commitSVGEdit();
+  var wrap=document.getElementById('canvas-wrap'),sr=svg.getBoundingClientRect(),wr=wrap.getBoundingClientRect();
+  var sx=sr.width/vw,sy=sr.height/vh;
+  editState={nodeId:nodeId};
+  overlay.style.cssText='display:block;left:'+((rx-vx)*sx+sr.left-wr.left)+'px;top:'+((ry-vy)*sy+sr.top-wr.top)+'px;width:'+(rw*sx)+'px;height:'+(rh*sy)+'px;';
+  editInput.value=cv;editInput.focus();editInput.select();
+}
+function commitSVGEdit(){
+  if(!editState)return;
+  var val=editInput.value.trim();
+  if(val){
+    var f=findNode(editState.nodeId);
+    if(f){ f.node.name=val; }
+    // 若是起點根節點，也同步起點 label
+    var re=roots.find(function(r){return r.node.id===editState.nodeId;});
+    if(re){ re.label=val; }
+  }
+  overlay.style.display='none';editState=null;render();
+}
+editInput.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();commitSVGEdit();}
+  if(e.key==='Escape'){overlay.style.display='none';editState=null;renderSVG();}
+});
+
+// ── 備註 ──
+var noteNodeId=null;
+function openNote(id){var f=findNode(id);if(!f)return;noteNodeId=id;document.getElementById('np-node-name').textContent='節點：'+f.node.name;document.getElementById('note-textarea').value=f.node.note||'';document.getElementById('note-panel').classList.add('open');document.getElementById('note-textarea').focus();}
+function closeNote(){document.getElementById('note-panel').classList.remove('open');noteNodeId=null;}
+function saveNote(){if(noteNodeId===null)return;var f=findNode(noteNodeId);if(!f)return;f.node.note=document.getElementById('note-textarea').value;closeNote();render();}
+
+// ── Sidebar 渲染 ──
+function renderSidebar(){
+  var el=document.getElementById('tree-list');
+  if(!roots.length){
+    el.innerHTML='<div style="padding:16px 8px;font-size:12px;color:var(--text3);text-align:center;">還沒有起點</div>';
+    return;
+  }
+  el.innerHTML = roots.map(function(re, ri){
+    return renderRootGroup(re, ri);
+  }).join('');
+}
+
+function renderRootGroup(re, ri){
+  var col = re.color;
+  var html = '<div class="root-group" data-rootid="'+re.id+'">';
+  // 群組標頭
+  html += '<div class="root-group-head">';
+  html += '<div class="root-dot-big" style="background:'+col+'"></div>';
+  html += '<span class="root-group-name" ondblclick="startRootRename('+re.id+',event)">'+re.label+'</span>';
+  html += '<input class="root-group-name-input" id="rni-'+re.id+'" onblur="commitRootRename('+re.id+',this)" onkeydown="if(event.key===\'Enter\')this.blur();if(event.key===\'Escape\'){this.style.display=\'none\';this.previousElementSibling.style.display=\'\';}"/>';
+  html += '<div class="root-group-actions">';
+  html += '<button class="root-group-btn" title="折疊/展開" onclick="toggleRootCollapse('+re.id+')">'+( re.collapsed?'▸':'▾')+'</button>';
+  html += '<button class="root-group-btn del" title="刪除起點" onclick="deleteRootEntry('+re.id+')">×</button>';
+  html += '</div>';
+  html += '</div>';
+  // 群組內容
+  if(!re.collapsed){
+    html += '<div class="root-group-body">';
+    // 起點自身的子節點
+    html += re.node.children.map(function(c){return renderTreeItem(c, 0, col, re.node);}).join('');
+    // 新增子節點區
+    html += '<div style="padding:4px 6px;">';
+    if(re.node.showAdd){
+      html += '<div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">';
+      html += '<textarea id="add-root-'+re.id+'" placeholder="直接貼上多行文字…" style="width:100%;font-family:inherit;font-size:12px;padding:8px;border:1px solid var(--accent);border-radius:6px;height:70px;outline:none;resize:vertical;"></textarea>';
+      html += '<div style="display:flex;justify-content:flex-end;gap:6px;">';
+      html += '<button onclick="addChildToRoot('+re.id+')" style="padding:4px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;">批量新增</button>';
+      html += '<button onclick="toggleRootAddChild('+re.id+')" style="padding:4px 12px;background:var(--surface2);color:var(--text2);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:11px;">取消</button>';
+      html += '</div></div>';
+    } else {
+      html += '<button onclick="toggleRootAddChild('+re.id+')" style="width:100%;font-size:11px;padding:4px 8px;border:1px dashed var(--border);border-radius:5px;background:transparent;color:var(--text3);cursor:pointer;">＋ 新增節點</button>';
+    }
+    html += '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function startRootRename(rootId, e){
+  e.stopPropagation();
+  var re = findRootEntryById(rootId);
+  if(!re) return;
+  var nameEl = document.querySelector('.root-group[data-rootid="'+rootId+'"] .root-group-name');
+  var inputEl = document.getElementById('rni-'+rootId);
+  if(nameEl && inputEl){
+    nameEl.style.display='none';
+    inputEl.value = re.label;
+    inputEl.style.display='block';
+    inputEl.focus(); inputEl.select();
+  }
+}
+function commitRootRename(rootId, inp){
+  var nameEl = document.querySelector('.root-group[data-rootid="'+rootId+'"] .root-group-name');
+  if(nameEl) nameEl.style.display='';
+  inp.style.display='none';
+  var val = inp.value.trim();
+  if(val) renameRootEntry(rootId, val);
+}
+
+function toggleRootAddChild(rootId){
+  var re = findRootEntryById(rootId);
+  if(!re) return;
+  re.node.showAdd = !re.node.showAdd;
+  renderSidebar();
+  if(re.node.showAdd) setTimeout(function(){ var el=document.getElementById('add-root-'+rootId); if(el)el.focus(); },50);
+}
+
+function addChildToRoot(rootId){
+  var re = findRootEntryById(rootId);
+  if(!re) return;
+  var inp = document.getElementById('add-root-'+rootId);
+  if(!inp) return;
+  var content = inp.value.trim(); if(!content) return;
+  var lines = content.split(/\r?\n/).map(function(l){return l.trim();}).filter(function(l){return l!=='';});
+  if(!lines.length) return;
+  lines.forEach(function(name){ re.node.children.push(mkNode(name)); });
+  re.node.open=true; re.node.showAdd=false;
+  autoLayout(); render();
+}
+
+function renderTreeItem(node,depth,col,parentNode){
+  var hasChildren=node.children.length>0;
+  var indent=depth*14;
+  var noteIcon=node.note&&node.note.trim()?'📝':'📋';
+  var html='<div class="tree-item" data-id="'+node.id+'">';
+  html+='<div class="drop-indicator"></div>';
+  html+='<div class="tree-row" onclick="selectNode('+node.id+',event)">';
+  html+='<div style="width:'+indent+'px;flex-shrink:0"></div>';
+  html+='<div class="drag-handle"><span></span><span></span><span></span></div>';
+  html+='<div class="tree-toggle" onclick="toggleNodeOpen('+node.id+',event)">'+(hasChildren?(node.open?'▾':'▸'):'')+'</div>';
+  html+='<div class="tree-dot" style="border-color:'+col+'"></div>';
+  html+='<div class="label-wrap"><span class="tree-label">'+node.name+'</span>';
+  html+='<input class="tree-label-input" id="sbi-'+node.id+'" onblur="commitSBRename('+node.id+',this)" onkeydown="if(event.key===\'Enter\')this.blur();"/></div>';
+  html+='<div class="tree-actions">';
+  html+='<button class="tree-btn" onclick="event.stopPropagation();openNote('+node.id+')">'+noteIcon+'</button>';
+  html+='<button class="tree-btn" onclick="event.stopPropagation();toggleAddChild('+node.id+')">＋</button>';
+  html+='<button class="tree-btn del" onclick="event.stopPropagation();deleteNode('+node.id+')">×</button>';
+  html+='</div></div>';
+
+  // 子節點新增
+  if(node.showAdd){
+    html+='<div style="margin-left:'+(indent+28)+'px;display:flex;flex-direction:column;gap:6px;margin-top:4px;">';
+    html+='<textarea id="add-'+node.id+'" placeholder="直接貼上多行文字…" style="width:100%;font-family:inherit;font-size:12px;padding:8px;border:1px solid var(--accent);border-radius:6px;height:70px;outline:none;resize:vertical;"></textarea>';
+    html+='<div style="display:flex;justify-content:flex-end;gap:6px;">';
+    html+='<button onclick="addChild('+node.id+')" style="padding:4px 12px;background:var(--accent);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;">批量新增</button>';
+    html+='<button onclick="toggleAddChild('+node.id+')" style="padding:4px 12px;background:var(--surface2);color:var(--text2);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:11px;">取消</button>';
+    html+='</div></div>';
+  }
+
+  if(hasChildren&&node.open){
+    html+='<div class="tree-children">'+node.children.map(function(c){return renderTreeItem(c,depth+1,col,node);}).join('')+'</div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function selectNode(id,e){
+  if(e)e.stopPropagation();
+  selectedId=id;
+  document.querySelectorAll('.tree-item.selected').forEach(function(el){el.classList.remove('selected');});
+  var el=document.querySelector('.tree-item[data-id="'+id+'"]');
+  if(el){el.classList.add('selected');el.scrollIntoView({block:'nearest'});}
+  renderSVG();
+}
+
+function toggleNodeOpen(id,e){
+  if(e)e.stopPropagation();
+  var f=findNode(id);
+  if(f){f.node.open=!f.node.open;autoLayout();render();}
+}
+
+function toggleAddChild(id){
+  var f=findNode(id);
+  if(!f)return;
+  f.node.showAdd=!f.node.showAdd;
+  renderSidebar();
+  if(f.node.showAdd) setTimeout(function(){var el=document.getElementById('add-'+id);if(el)el.focus();},50);
+}
+
+function addChild(id){
+  var inp=document.getElementById('add-'+id);
+  if(!inp)return;
+  var content=inp.value.trim(); if(!content)return;
+  var f=findNode(id); if(!f)return;
+  var lines=content.split(/\r?\n/).map(function(l){return l.trim();}).filter(function(l){return l!=='';});
+  if(!lines.length)return;
+  lines.forEach(function(name){f.node.children.push(mkNode(name));});
+  f.node.open=true;f.node.showAdd=false;
+  autoLayout();render();
+}
+
+function deleteNode(id){
+  var f=findNode(id);if(!f)return;
+  if(!confirm('確定刪除？'))return;
+  f.siblings.splice(f.idx,1);
+  autoLayout();render();
+}
+
+function commitSBRename(id, inp){
+  var val=inp.value.trim();
+  if(val){var f=findNode(id);if(f)f.node.name=val;}
+  inp.style.display='none';
+  var lbl=inp.previousElementSibling;
+  if(lbl&&lbl.classList.contains('tree-label')){lbl.style.display='';lbl.textContent=val||lbl.textContent;}
+  autoLayout();render();
+}
+
+function containsNode(node,id){if(node.id===id)return true;return node.children.some(function(c){return containsNode(c,id);});}
+
+function updateStats(){
+  var total=0;
+  roots.forEach(function(re){
+    function ca(n){total++;n.children.forEach(ca);}
+    ca(re.node);
+  });
+  document.getElementById('stats-bar').innerHTML='<span>起點 <b>'+roots.length+'</b></span><span>節點 <b>'+total+'</b></span>';
+}
+
+function render(){renderSidebar();renderSVG();}
+
+// ── JSON 匯入 ──
+function handleImport(e){
+  var file=e.target.files[0];if(!file)return;
+  var r=new FileReader();r.onload=function(ev){
+    try{
+      var data=JSON.parse(ev.target.result);
+      if(data.title) document.getElementById('map-title').value=data.title;
+      var tempRoots=[];
+      var nextId=1;
+      function reassign(nodes){nodes.forEach(n=>{n.id=nextId++;if(n.children)reassign(n.children);});}
+      // 支援新格式（roots array）和舊格式（nodes array）
+      if(data.roots && Array.isArray(data.roots)){
+        data.roots.forEach(function(re,ri){
+          if(!re.node) return;
+          reassign([re.node]);
+          tempRoots.push({
+            id:nextId++,
+            label:re.label||re.node.name||'起點',
+            color:re.color||COLORS[ri%COLORS.length],
+            collapsed:false,
+            node:re.node
+          });
+        });
+      } else {
+        // 舊格式相容
+        var oldNodes=Array.isArray(data)?data:(data.nodes||[]);
+        reassign(oldNodes);
+        oldNodes.forEach(function(n,ni){
+          tempRoots.push({id:nextId++,label:n.name,color:COLORS[ni%COLORS.length],collapsed:false,node:n});
+        });
+      }
+      _id=nextId;
+      roots=tempRoots;
+      autoLayout();render();
+    }catch(err){alert('JSON 格式錯誤：'+err.message);}
+  };r.readAsText(file);e.target.value='';
+}
+
+function exportJSON(){
+  var data={title:document.getElementById('map-title').value,roots:roots};
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download='mindmap.json';a.click();
+}
+function importJSON(){document.getElementById('import-file').click();}
+
+document.getElementById('new-root-input').addEventListener('keydown',function(e){if(e.key==='Enter')addRootNode();});
+
+applyVB();render();
+</script>
+
+<!-- ══════════════════════════════════════════════
+     ☁ Firebase 雲端儲存
+     設定方式請見檔案最下方註解
+═══════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc,
+  query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ──────────────────────────────────────────────
+// 請把下面換成你自己 Firebase 專案的設定值
+// (Firebase Console → 專案設定 → 您的應用程式 → SDK 設定與設定)
+// ──────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+let app, auth, db, currentUser = null, currentMapId = null;
+
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+} catch (err) {
+  console.error("Firebase 初始化失敗，請確認 firebaseConfig 是否已填寫：", err);
+}
+
+const provider = new GoogleAuthProvider();
+
+function $(id){ return document.getElementById(id); }
+
+window.handleAuthClick = function(){
+  if (currentUser) {
+    signOut(auth);
+  } else {
+    signInWithPopup(auth, provider).catch(function(err){
+      alert("登入失敗：" + err.message);
+    });
+  }
+};
+
+if (auth) {
+  onAuthStateChanged(auth, function(user){
+    currentUser = user;
+    var btn = $('auth-btn');
+    if (user) {
+      btn.textContent = '登出 (' + (user.displayName || user.email || '') + ')';
+      $('cloud-status').textContent = '已登入：' + (user.displayName || user.email);
+      refreshCloudList();
+    } else {
+      btn.textContent = '登入';
+      $('cloud-status').textContent = '尚未登入，請先登入以使用雲端儲存';
+      $('cloud-list').innerHTML = '';
+    }
+  });
+}
+
+// ── 儲存目前心智圖到雲端 ──
+window.saveToCloud = async function(){
+  if (!currentUser) { alert('請先登入 Google 帳號才能雲端儲存'); return; }
+  var title = (document.getElementById('map-title').value || '未命名心智圖').trim();
+  var data = { title: title, roots: roots, updatedAt: serverTimestamp() };
+  try {
+    var mapsCol = collection(db, 'users', currentUser.uid, 'maps');
+    var ref;
+    if (currentMapId) {
+      ref = doc(mapsCol, currentMapId);
+    } else {
+      ref = doc(mapsCol); // 自動產生新的 doc id
+      currentMapId = ref.id;
+    }
+    await setDoc(ref, data);
+    $('cloud-save-btn').textContent = '☁ 已儲存 ✓';
+    setTimeout(function(){ $('cloud-save-btn').textContent = '☁ 雲端儲存'; }, 1500);
+    refreshCloudList();
+  } catch (err) {
+    alert('儲存失敗：' + err.message);
+  }
+};
+
+// ── 另存新檔（不覆蓋目前雲端文件）──
+window.saveAsNewCloud = function(){
+  currentMapId = null;
+  window.saveToCloud();
+};
+
+// ── 開啟 / 關閉 面板 ──
+window.openCloudPanel = function(){
+  $('cloud-overlay').style.display = 'block';
+  $('cloud-panel').style.display = 'flex';
+  if (currentUser) refreshCloudList();
+};
+window.closeCloudPanel = function(){
+  $('cloud-overlay').style.display = 'none';
+  $('cloud-panel').style.display = 'none';
+};
+document.getElementById('cloud-overlay').addEventListener('click', window.closeCloudPanel);
+
+// ── 列出雲端已儲存的心智圖 ──
+async function refreshCloudList(){
+  if (!currentUser) return;
+  var listEl = $('cloud-list');
+  listEl.innerHTML = '<div style="padding:10px;font-size:11px;color:var(--text3);">載入中…</div>';
+  try {
+    var mapsCol = collection(db, 'users', currentUser.uid, 'maps');
+    var q = query(mapsCol, orderBy('updatedAt', 'desc'));
+    var snap = await getDocs(q);
+    if (snap.empty) {
+      listEl.innerHTML = '<div style="padding:10px;font-size:11px;color:var(--text3);">尚無已儲存的心智圖，按「雲端儲存」建立第一筆</div>';
+      return;
+    }
+    var html = '';
+    snap.forEach(function(d){
+      var v = d.data();
+      var t = v.updatedAt && v.updatedAt.toDate ? v.updatedAt.toDate().toLocaleString() : '';
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:8px 8px;border-radius:7px;margin-bottom:2px;" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'\'">'+
+        '<div style="flex:1;min-width:0;cursor:pointer;" onclick="loadFromCloud(\''+d.id+'\')">'+
+          '<div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+ (v.title||'未命名') +'</div>'+
+          '<div style="font-size:10px;color:var(--text3);">'+t+'</div>'+
+        '</div>'+
+        '<button onclick="deleteFromCloud(\''+d.id+'\')" title="刪除" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:2px 5px;">🗑</button>'+
+      '</div>';
+    });
+    listEl.innerHTML = html;
+  } catch (err) {
+    listEl.innerHTML = '<div style="padding:10px;font-size:11px;color:#c0392b;">讀取失敗：'+err.message+'</div>';
+  }
+}
+
+// ── 從雲端載入一份心智圖 ──
+window.loadFromCloud = async function(mapId){
+  try {
+    var ref = doc(db, 'users', currentUser.uid, 'maps', mapId);
+    var snap = await getDoc(ref);
+    if (!snap.exists()) { alert('找不到這份心智圖'); return; }
+    var data = snap.data();
+    document.getElementById('map-title').value = data.title || '';
+    roots = data.roots || [];
+    // 重新計算最大 id，避免新增節點時 id 衝突
+    var maxId = 0;
+    function scan(n){ if(n.id>maxId) maxId=n.id; (n.children||[]).forEach(scan); }
+    roots.forEach(function(r){ if(r.id>maxId) maxId=r.id; if(r.node) scan(r.node); });
+    _id = maxId + 1;
+    currentMapId = mapId;
+    autoLayout(); render();
+    window.closeCloudPanel();
+  } catch (err) {
+    alert('載入失敗：' + err.message);
+  }
+};
+
+// ── 刪除雲端心智圖 ──
+window.deleteFromCloud = async function(mapId){
+  if (!confirm('確定要刪除這份雲端心智圖嗎？此動作無法復原')) return;
+  try {
+    await deleteDoc(doc(db, 'users', currentUser.uid, 'maps', mapId));
+    if (currentMapId === mapId) currentMapId = null;
+    refreshCloudList();
+  } catch (err) {
+    alert('刪除失敗：' + err.message);
+  }
+};
+</script>
+
+<!-- ══════════════════════════════════════════════
+  📘 Firebase 設定步驟（首次使用必看）
+
+  1. 前往 https://console.firebase.google.com 建立一個新專案（免費）
+  2. 左側選單「建構」→「Authentication」→ 開始使用 → 啟用「Google」登入方式
+  3. 左側選單「建構」→「Firestore Database」→ 建立資料庫
+       - 位置選 asia-east1（台灣/亞洲）
+       - 安全性規則先選「測試模式」(之後請依下方規則調整)
+  4. 左側選單「專案設定」(齒輪圖示) → 一路往下捲到「您的應用程式」
+       → 按 </> 圖示新增「網頁應用程式」→ 取得 firebaseConfig 物件
+  5. 把上面 <script type="module"> 裡的 firebaseConfig 換成你自己的設定值
+  6. 上傳這個 HTML 到 GitHub Pages 即可使用
+
+  ⚠️ 安全性規則（Firestore → 規則，貼上以下內容，確保每人只能存取自己的資料）：
+
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /users/{userId}/maps/{mapId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+
+  ⚠️ 另外，Authentication →「設定」→「已授權網域」要加入你的
+     GitHub Pages 網域，例如 your-username.github.io
+═══════════════════════════════════════════════ -->
+</body>
+</html>
